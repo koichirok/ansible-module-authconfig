@@ -49,7 +49,7 @@ options:
     choices: [ "descrypt", "bigcrypt", "md5", "sha256", "sha512" ]
     default: null
     aliases: []
-   
+
   enablenis:
     description:
       - "Enable/Disable NIS for user information by default"
@@ -57,14 +57,14 @@ options:
     choices: [ "yes", "no" ]
     default: null
     aliases: []
-   
+
   nisdomain:
     description:
       - "Specify default NIS domain"
     required: false
     default: null
     aliases: []
-   
+
   nisserver:
     description:
       - "Specify default NIS server"
@@ -72,7 +72,7 @@ options:
     choices: [ "descrypt", "bigcrypt", "md5", "sha256", "sha512" ]
     default: null
     aliases: []
-   
+
   enableldap:
     description:
       - "Enable/Disable LDAP for user information by default"
