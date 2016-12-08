@@ -1,0 +1,9 @@
+---
+required_packages:
+  - authconfig
+
+optional_packages:
+  - nss-pam-ldapd
+#  - sssd
+#  - pam_pkcs11
+#  - pam_krb5

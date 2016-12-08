@@ -1,0 +1,12 @@
+---
+optional_packages:
+  - nscd
+  - nss-pam-ldapd
+  - initscripts
+  - patch
+
+enablesssd:        { default: 'disabled',  desc: 'nss_sss is' } 
+enablesssdauth:    { default: 'disabled', desc: 'pam_sss is' } 
+
+env:
+  RUNLEVEL: 3

@@ -1,0 +1,13 @@
+---
+required_packages:
+  - authconfig
+  - python-simplejson
+
+optional_packages:
+  - nscd
+
+enableshadow: { default: 'disabled', desc: 'shadow passwords are' }
+enablesssd: { default: 'disabled',  desc: 'nss_sss is' } 
+enablesssdauth: { default: 'disabled', desc: 'pam_sss is' } 
+enablelocauthorize: { default: 'disabled',  desc: 'Always authorize local users is' }
+enablemkhomedir: { default: 'disabled', desc: 'pam_mkhomedir is' }
