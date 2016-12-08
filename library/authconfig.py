@@ -416,8 +416,8 @@ options:
 
   enablesssd:
     description:
-      - "Set to C(yes) to enable SSSD for user information by default with
-        manually managed configuration. Set to C(no) disable SSSD for user
+      - "Set to I(yes) to enable SSSD for user information by default with
+        manually managed configuration. Set to I(no) disable SSSD for user
         information by default (still used for supported configurations)"
     required: false
     choices: [ "yes", "no" ]
@@ -426,8 +426,8 @@ options:
 
   enablesssdauth:
     description:
-      - "Set to C(yes) to enable SSSD for authentication by default with
-        manually managed configuration. Set to C(no) to disable SSSD for
+      - "Set to I(yes) to enable SSSD for authentication by default with
+        manually managed configuration. Set to I(no) to disable SSSD for
         authentication by default (still used for supported configurations)"
     required: false
     choices: [ "yes", "no" ]
@@ -461,8 +461,8 @@ options:
 
   enablelocauthorize:
     description:
-      - "When set to C(yes), local authorization is sufficient for local
-        users. Set to C(no) to authorize local users also through remote
+      - "When set to I(yes), local authorization is sufficient for local
+        users. Set to I(no) to authorize local users also through remote
         service"
     required: false
     choices: [ "yes", "no" ]
@@ -479,8 +479,8 @@ options:
 
   enablesysnetauth:
     description:
-      - "Set to C(yes) to authenticate system accounts by network services.
-        Set to C(no) to authenticate system accounts by local files only."
+      - "Set to I(yes) to authenticate system accounts by network services.
+        Set to I(no) to authenticate system accounts by local files only."
     required: false
     choices: [ "yes", "no" ]
     default: null
@@ -586,7 +586,9 @@ options:
     choices: [ "yes", "no" ]
     default: null
     aliases: []
-
+notes:
+    - "Since changed behavior depends on I(authconfig --test) output, this
+      module reports not changed for some options even if changes are made"
 author:
     - "KIKUCHI Koichiro"
 '''
@@ -601,6 +603,19 @@ EXAMPLES = '''
 # Enable cache (nscd) but don't start nscd daemon
 - authconfig: enablecache=yes nostart=yes
 '''
+RETURN = '''
+new_settings:
+    description: "'authconfig --test' output"
+    returned: when not check_mode
+    type: string
+    sample: 'caching is disabled\nnss_files is always enabled\nnss_compat is disabled\nnss_db is disabled\nnss_hesiod is disabled\n hesiod LHS = ""\n hesiod RHS = ""\n nss_ldap is enabled\n...'
+new_settings_lines:
+    description: when C(new_settings) is returned we also provide this field which is a list of strings, one item per line from the original.
+    returned: when not check_mode
+    type: list
+    sample: ["caching is disabled", "nss_files is always enabled", "nss_compat is disabled", "nss_db is disabled", "nss_hesiod is disabled", ' hesiod LHS = ""', ' hesiod RHS = ""', "nss_ldap is enabled", "..."]
+'''
+ 
 
 def build_boolean_option(params, key):
     opt = '--'

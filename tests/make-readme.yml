@@ -1,0 +1,28 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    clean: True
+    heading: 'Andible authconfig module'
+    requirements:
+      - 'authconfig package'
+
+  tasks:
+    - name: 'clone ansible-webdocs repo.'
+      git: repo=https://github.com/koichirok/ansible-webdocs.git
+           dest=roles/ansible-webdocs depth=1
+
+    - name: load ansible-webdocs
+      include_role:
+        name: ansible-webdocs
+
+    - name: run make-readme role
+      include_role:
+        name: make-readme
+
+    - name: remove ansible-webdocs
+      file: path=roles/ansible-webdocs state=absent
+      when: clean
