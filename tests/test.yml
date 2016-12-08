@@ -1,0 +1,69 @@
+---
+- hosts: all
+  connection: docker
+  environment: '{{env}}'
+  roles:
+    - { role: install-packages, tags: [ 'install-packages' ] }
+    - ansible-module-authconfig # load module
+    # tests
+    - { role: test-bool-option, option: enableshadow, tags: [ 'enableshadow' ] }
+#    - { role: test-bool-option, option: enablemd5,, tags: [ 'enablemd5,' ] } non_bool_exp: True }
+#passalgo
+    - { role: test-bool-option, option: enablenis, tags: [ 'enablenis' ] }
+    - { role: test-bool-option, option: enableldap, tags: [ 'enableldap' ] }
+    - { role: test-bool-option, option: enableldapauth, tags: [ 'enableldapauth' ] }
+    - { role: test-bool-option, option: enableldaptls, tags: [ 'enableldaptls' ] } 
+#    - { role: test-special-bool-exp-option, option: enablerfc2307bis, tags: [ 'enablerfc2307bis' ] }
+    # enablesmartcard and enablerequiresmartcard don't work properly without pam_pkcs11
+    - { role: test-bool-option, option: enablesmartcard, tags: [ 'enablesmartcard' ] }
+    - { role: test-bool-option, option: enablerequiresmartcard, tags: [ 'enablerequiresmartcard' ] }
+    - { role: test-bool-option, option: enablefingerprint, tags: [ 'enablefingerprint' ],
+        when: "ansible_distribution_major_version|int > 5" }
+    - { role: test-bool-option, option: enableecryptfs, tags: [ 'enableecryptfs' ],
+        when: "ansible_distribution_major_version|int > 6" }
+    - { role: test-bool-option, option: enablekrb5, tags: [ 'enablekrb5' ] }
+    - { role: test-bool-option, option: enablekrb5kdcdns, tags: [ 'enablekrb5kdcdns' ] }
+    - { role: test-bool-option, option: enablekrb5realmdns, tags: [ 'enablekrb5realmdns' ] }
+    - { role: test-bool-option, option: enablewinbind, tags: [ 'enablewinbind' ] }
+    - { role: test-bool-option, option: enablewinbindauth, tags: [ 'enablewinbindauth' ] }
+#    - { role: test-bool-option, option: enablewinbindusedefaultdomain, tags: [ 'enablewinbindusedefaultdomain' ] }
+#    - { role: test-bool-option, option: enablewinbindoffline, tags: [ 'enablewinbindoffline' ] }
+#    - { role: test-bool-option, option: enablewinbindkrb5, tags: [ 'enablewinbindkrb5' ] }
+
+    - { role: test-bool-option, option: enableipav2, tags: [ 'enableipav2' ],
+        when: "ansible_distribution_major_version|int > 5" }
+#    - { role: test-bool-option, option: enableipav2nontp, tags: [ 'enableipav2nontp' ] }
+    - { role: test-bool-option, option: enablewins, tags: [ 'enablewins' ] }
+    - { role: test-bool-option, option: enablepreferdns, depends: [ enablewins ],
+        tags: [ 'enablepreferdns' ], 
+        when: "ansible_distribution_major_version|int > 5" } # no difference in 'authconfig --test output'
+    - { role: test-bool-option, option: enablehesiod, tags: [ 'enablehesiod' ] }
+    - { role: test-bool-option, option: enablesssd, tags: [ 'enablesssd' ] }
+    - { role: test-bool-option, option: enablesssdauth, tags: [ 'enablesssdauth' ] }
+    - { role: test-special-bool-exp-option, option: enableforcelegacy, tags: [ 'enableforcelegacy' ],
+        when: "ansible_distribution_major_version|int > 5" }
+    - { role: test-bool-option, option: enablecachecreds, tags: [ 'enablecachecreds' ],
+        when: "ansible_distribution_major_version|int > 5" } # 5: unsupported, 6: needs valid config to work
+    - { role: test-bool-option, option: enablecache, tags: [ 'enablecache' ] }
+    - { role: test-bool-option, option: enablelocauthorize, tags: [ 'enablelocauthorize' ] }
+    - { role: test-bool-option, option: enablepamaccess, tags: [ 'enablepamaccess' ] }
+    - { role: test-bool-option, option: enablesysnetauth, tags: [ 'enablesysnetauth' ] }
+    - { role: test-bool-option, option: enablemkhomedir, tags: [ 'enablemkhomedir' ] }
+#    - { role: test-bool-option, option: enablereqlower, tags: [ 'enablereqlower' ] }
+#    - { role: test-bool-option, option: enablereqdigit, tags: [ 'enablereqdigit' ] }
+#    - { role: test-bool-option, option: enablereqother, tags: [ 'enablereqother' ] }
+#    - { role: test-bool-option, option: enablerequpper, tags: [ 'enablerequpper' ] }
+
+#    - { role: test-string-option, option: ldapserver,, tags: [ 'ldapserver,' ] } value: "ldap://ldap.example.com/" }
+#    - { role: test-string-option, option: ldapbasedn, tags: [ 'ldapbasedn' ] }
+#    - { role: test-string-option, option: ldaploadcacert, tags: [ 'ldaploadcacert' ] }
+
+#  tasks:
+#    - name: Run without options
+#      authconfig:
+#      register: result
+#
+#    - name: Whithout options, no changes are made
+#      assert:
+#        that:
+#          - not result|changed

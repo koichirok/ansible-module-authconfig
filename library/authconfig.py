@@ -729,7 +729,7 @@ def main():
             # remove '=<...>' part
             if '=' in opt:
                 opt = opt.split('=')[0]
-            available_opts[opt.replace('--', 1)] = 1
+            available_opts[opt.replace('--', '', 1)] = 1
 
     for x in params:
         if params[x] is None:

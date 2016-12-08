@@ -1,0 +1,41 @@
+---
+
+ - name: "{{option}} | Enable depends if disabled"
+   authconfig: '{{item}}=yes'
+   when: "vars[item].default == 'disabled'"
+   with_items: '{{depends}}'
+
+ - name: "{{option}} | Change setting by {{option}}={{ 'no' if vars[option].default == 'enabled' else 'yes' }}"
+   authconfig: "{{option}}={{ 'no' if vars[option].default == 'enabled' else 'yes' }}"
+   register: result
+
+ - name: "{{option}} | Assert 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "{{option}} | Assert '{{ '%s %s'|format(vars[option].desc, 'disabled' if vars[option].default == 'enabled' else 'enabled') }}' in new settings"
+   assert:
+     that:
+       - "'%s %s'|format(vars[option].desc, 'disabled' if vars[option].default == 'enabled' else 'enabled') in result.new_settings"
+
+
+ - name: "{{option}} | Restore setting by {{option}}={{ 'yes' if vars[option].default == 'enabled' else 'no' }}"
+   authconfig: "{{option}}={{ 'yes' if vars[option].default == 'enabled' else 'no' }}"
+   register: result
+
+ - name: "{{option}} | Assert 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "{{option}} | Assert '{{ '%s %s'|format(vars[option].desc, 'enabled' if vars[option].default == 'enabled' else 'disabled') }}' in new settings"
+   assert:
+     that:
+       - "'%s %s'|format(vars[option].desc, 'enabled' if vars[option].default == 'enabled' else 'disabled') in result.new_settings"
+
+ - name: "{{option}} | Disable depends if disabled by default"
+   authconfig: '{{item}}=no'
+   when: "vars[item].default == 'disabled'"
+   with_items: '{{depends}}'
+

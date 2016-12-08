@@ -1,0 +1,41 @@
+---
+
+ - name: "Set value to {{option}}: {{value}}"
+   authconfig: "{{option}}='{{value}}'"
+   register: result
+
+ - name: "Assert result is 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "Store current authconfig settings for next assert"
+   command: /sbin/authconfig --test
+   register: result
+   changed_when: False
+
+ - name: "Assert '{{ '%s = \"%s\"'|format(data[option]['desc'], value) }}' in current settings"
+   assert:
+     that:
+       - "'%s = \"%s\"'|format(data[option]['desc'], value) in result.stdout_lines"
+
+
+ - name: "Restore value of {{option}}"
+   authconfig: "{{option}}={{ data[option]['default'] }}"
+   register: result
+
+ - name: "Assert result is 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "Store current authconfig settings for next assert"
+   command: /sbin/authconfig --test
+   register: result
+   changed_when: False
+
+ - name: "Assert '{{ '%s = \"%s\"'|format(data[option]['desc'], data[option].default) }}' in current settings"
+   assert:
+     that:
+       - "'%s = \"%s\"'|format(data[option]['desc'], data[option]['default']) in result.stdout_lines"
+

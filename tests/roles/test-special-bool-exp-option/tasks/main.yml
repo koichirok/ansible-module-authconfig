@@ -1,0 +1,30 @@
+---
+
+ - name: "{{option}} | change state"
+   authconfig: "{{option}}={{ 'no' if vars[option].default == vars[option].enable else 'yes' }}"
+   register: result
+
+ - name: "{{option}} | assert 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "{{option}} | assert '{{ '%s %s'|format(vars[option].desc, vars[option].disable if vars[option].default == vars[option].enable else vars[option].enable) }}' in new settings"
+   assert:
+     that:
+       - "'%s %s'|format(vars[option].desc, vars[option].disable if vars[option].default == vars[option].enable else vars[option].enable) in result.new_settings"
+
+
+ - name: "{{option}} | restore setting"
+   authconfig: "{{option}}={{ 'yes' if vars[option].default == vars[option].enable else 'no' }}"
+   register: result
+
+ - name: "{{option}} | assert 'changed'"
+   assert:
+     that:
+       - result|changed
+
+ - name: "{{option}} | assert '{{ '%s %s'|format(vars[option].desc, vars[option].enable if vars[option].default == vars[option].enable else vars[option].disable) }}' in new settings"
+   assert:
+     that:
+       - "'%s %s'|format(vars[option].desc, vars[option].enable if vars[option].default == vars[option].enable else vars[option].disable) in result.new_settings"

@@ -1,0 +1,73 @@
+---
+# environment variables
+env: {}
+
+# authconfig options default
+enableshadow: { default: 'enabled', desc: 'shadow passwords are' }
+enablemd5: { default: 'sha512',  desc: 'password hashing algorithm is', enable: 'md5', disable: 'descrypt' }
+passalgo: { default: 'sha512',  desc: 'password hashing algorithm is' }
+enablenis: { default: 'disabled', desc: 'nss_nis is' }
+nisdomain: { default: '',         desc: 'NIS domain' }
+nisserver: { default: '',         desc: 'NIS server' }
+enableldap: { default: 'disabled', desc: 'nss_ldap is' }
+enableldapauth: { default: 'disabled', desc: 'pam_ldap is' }
+ldapserver: { default: '', desc: 'LDAP server' } #  nss-pam-ldapd's default: 'ldap://127.0.0.1/'
+ldapbasedn: { default: '', desc: 'LDAP base DN' } #  nss-pam-ldapd's default: 'dc=example,dc=com'
+enableldaptls: { default: 'disabled', desc: 'LDAP+TLS is' }
+enablerfc2307bis: { default: '= "rfc2307"',  desc: 'LDAP schema', enable: '= "rfc2307bis"', disable: '= "rfc2307"' }
+ldaploadcacert: { default: '', desc: '' } # FIXME
+enablesmartcard: { default: 'disabled', desc: 'pam_pkcs11 is' }
+enablerequiresmartcard: { default: 'disabled', desc: 'use only smartcard for login is' }
+smartcardmodule: { default: '', desc: 'smartcard module' }
+smartcardaction: { default: '', desc: 'smartcard removal action' }
+enablefingerprint: { default: 'disabled', desc: 'pam_fprintd is' }
+enableecryptfs: { default: 'disabled', desc: 'pam_ecryptfs is' }
+enablekrb5: { default: 'disabled', desc: 'pam_krb5 is' }
+krb5kdc: { default: '',         desc: 'krb5 kdc' }
+krb5adminserver: { default: '',         desc: 'krb5 admin server' }
+krb5realm: { default: '',         desc: 'krb5 realm' }
+enablekrb5kdcdns: { default: 'disabled', desc: 'krb5 kdc via dns is' }
+enablekrb5realmdns: { default: 'disabled', desc: 'krb5 realm via dns is' }
+enablewinbind: { default: 'disabled', desc: 'nss_winbind is' }
+enablewinbindauth: { default: 'disabled', desc: 'pam_winbind is' }
+smbsecurity: { default: 'user',     desc: 'SMB security' }
+smbrealm: { default: '',         desc: 'SMB realm' }
+smbservers: { default: '',         desc: 'SMB servers' }
+smbworkgroup: { default: '',         desc: 'SMB workgroup' }
+smbidmaprange: { default: '16777216-33554431', desc: 'SMB idmap range' }
+winbindseparator: { default: '', desc: '' } # missing in authconfig --test output?
+winbindtemplatehomedir: { default: '', desc: '' } # missing in authconfig --test output?
+winbindtemplateprimarygroup: { default: '', desc: '' } # missing in authconfig --test output?
+winbindtemplateshell: { default: '/bin/false', desc: 'Winbind template shell' } # FIXME
+enablewinbindusedefaultdomain: { default: 'abled', desc: '' } # missing in authconfig --test output?
+enablewinbindoffline: { default: 'abled', desc: '' } # missing in authconfig --test output?
+enablewinbindkrb5: { default: 'abled', desc: '' } # missing in authconfig --test output?
+winbindjoin: { default: '', desc: '' } # FIXME
+enableipav2: { default: 'disabled', desc: 'IPAv2 is' }
+ipav2domain: { default: '',         desc: 'IPAv2 domain' }
+ipav2realm: { default: '',         desc: 'IPAv2 realm' }
+ipav2server: { default: '',         desc: 'IPAv2 server' }
+# enableipav2nontp:   { default: 'disabled', desc: '' } # missing in authconfig --test ouput?
+#ipav2join { default: '',         desc: 'IPAv2 domain was 'not joined
+enablewins: { default: 'disabled', desc: 'nss_wins is' }
+enablepreferdns: { default: 'disabled', desc: 'DNS preference over NSS or WINS is' }
+enablehesiod: { default: 'disabled', desc: 'nss_hesiod is' }
+hesiodlhs: { default: '',         desc: 'hesiod LHS' }
+hesiodrhs: { default: '',         desc: 'hesiod RHS' }
+enablesssd: { default: 'enabled',  desc: 'nss_sss is' } # + 'by default'
+enablesssdauth: { default: 'disabled', desc: 'pam_sss is' } # + 'by default'
+enableforcelegacy: { default: 'enabled',  desc: 'SSSD use instead of legacy services if possible is', enable: 'disabled', disable: 'enabled' }
+enablecachecreds: { default: 'enabled',  desc: 'credential caching in SSSD is' }
+enablecache: { default: 'disabled', desc: 'caching is' }
+enablelocauthorize: { default: 'enabled',  desc: 'Always authorize local users is' }
+enablepamaccess: { default: 'disabled', desc: 'pam_access is' }
+enablesysnetauth: { default: 'disabled', desc: 'Authenticate system accounts against network services is' }
+enablemkhomedir: { default: 'disabled', desc: 'pam_mkhomedir or pam_oddjob_mkhomedir is' }
+passminlen: { default: '', desc: '' } # FIXME
+passminclass: { default: '', desc: '' } # FIXME
+passmaxrepeat: { default: '', desc: '' } # FIXME
+passmaxclassrepeat: { default: '', desc: '' } # FIXME
+enablereqlower: { default: '', desc: '' } # FIXME
+enablerequpper: { default: '', desc: '' } # FIXME
+enablereqdigit: { default: '', desc: '' } # FIXME
+enablereqother: { default: '', desc: '' } # FIXME
