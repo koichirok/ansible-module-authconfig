@@ -1,7 +1,7 @@
 # Andible authconfig module
 [![Travis](https://travis-ci.org/koichirok/ansible-module-authconfig.svg?branch=master)](https://travis-ci.org/koichirok/ansible-module-authconfig)
 
-Manages system authentication resources with I(authconfig).
+Manages system authentication resources with _authconfig_
 
 ## Requirements
 * authconfig package
@@ -11,7 +11,7 @@ Manages system authentication resources with I(authconfig).
 TBD.
 
 ## Synopsis
- Configurering system authentication resources with I(authconfig(8)).
+ Configurering system authentication resources with _authconfig(8)_
 
 ## Options
 
@@ -31,9 +31,9 @@ TBD.
 | enablepreferdns  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Prefer/Do not prefer dns over wins or nis for hostname resolution  |
 | krb5kdc  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Specify default kerberos KDC  |
 | ldapbasedn  |   no  |  | |  default LDAP base DN  |
-| enableforcelegacy  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  When set to **no**, use SSSD implicitly if it supports the configuration. Set to **yes** never use SSSD implicity.  |
+| enableforcelegacy  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  When set to _no_, use SSSD implicitly if it supports the configuration. Set to _yes_  |
 | smbrealm  |   no  |  | |  Specify default realm for samba and winbind when security=ads  |
-| enablesssd  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to C(yes) to enable SSSD for user information by default with manually managed configuration. Set to C(no) disable SSSD for user information by default (still used for supported configurations)  |
+| enablesssd  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to _yes_ to enable SSSD for user information by default with manually managed configuration. Set to _no_ disable SSSD for user information by default (still used for supported configurations)  |
 | enablekrb5realmdns  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable use of DNS to find kerberos realms  |
 | smbworkgroup  |   no  |  | |  Specify workgroup authentication servers are in  |
 | ipav2domain  |   no  |  | |  Specify the IPAv2 domain the system should be part of  |
@@ -45,17 +45,17 @@ TBD.
 | passmaxrepeat  |   no  |  | |  Specify maximum number of same consecutive characters in a password  |
 | krb5realm  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Specify default kerberos realm  |
 | winbindjoin  |   no  |  | |  Specify administrator account to Join the winbind domain or ads realm now  |
-| enablelocauthorize  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  When set to C(yes), local authorization is sufficient for local users. Set to C(no) to authorize local users also through remote service  |
+| enablelocauthorize  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  When set to _yes_, local authorization is sufficient for local users. Set to _no_  |
 | ipav2server  |   no  |  | |  Specify the server for the IPAv2 domain  |
 | enablewinbindoffline  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Configures winbind to allow/prevent offline login  |
 | smartcardmodule  |   no  |  | |  Specify default smart card module to use  |
-| enablesysnetauth  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to C(yes) to authenticate system accounts by network services. Set to C(no) to authenticate system accounts by local files only.  |
+| enablesysnetauth  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to _yes_ to authenticate system accounts by network services. Set to _no_  |
 | enablewins  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable wins for hostname resolution  |
 | nostart  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  do not start/stop portmap, ypbind, and nscd  |
 | ldaploadcacert  |   no  |  | |  load CA certificate from the URL  |
 | enablerfc2307bis  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable use of RFC-2307bis schema for LDAP user information lookups  |
 | enablewinbindkrb5  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Winbind will use Kerberos 5 to authenticate/the default authentication method  |
-| enablesssdauth  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to C(yes) to enable SSSD for authentication by default with manually managed configuration. Set to C(no) to disable SSSD for authentication by default (still used for supported configurations)  |
+| enablesssdauth  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Set to _yes_ to enable SSSD for authentication by default with manually managed configuration. Set to _no_ to disable SSSD for authentication by default (still used for supported configurations)  |
 | enablesmartcard  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable authentication with smart card by default  |
 | passminlen  |   no  |  | |  Specify minimum length of a password  |
 | enablecache  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable caching of user information by defaul  |
@@ -90,7 +90,6 @@ TBD.
 | nisserver  |   no  |  | <ul> <li>descrypt</li>  <li>bigcrypt</li>  <li>md5</li>  <li>sha256</li>  <li>sha512</li> </ul> |  Specify default NIS server  |
 
 
- 
 ## Examples
 
 ```
@@ -106,12 +105,14 @@ TBD.
 
 | name | description | returned | type | sample |
 | ---- |-------------| ---------|----- |------- |
-| new_settings_lines | when C(new_settings) is returned we also provide this field which is a list of strings, one item per line from the original.  | when not check_mode  | list | ['caching is disabled', 'nss_files is always enabled', 'nss_compat is disabled', 'nss_db is disabled', 'nss_hesiod is disabled', ' hesiod LHS = ""', ' hesiod RHS = ""', 'nss_ldap is enabled', '...'] |
+| new_settings_lines | when `new_settings`  | when not check_mode  | list | ['caching is disabled', 'nss_files is always enabled', 'nss_compat is disabled', 'nss_db is disabled', 'nss_hesiod is disabled', ' hesiod LHS = ""', ' hesiod RHS = ""', 'nss_ldap is enabled', '...'] |
 | new_settings | 'authconfig --test' output  | when not check_mode  | string | caching is disabled nss_files is always enabled nss_compat is disabled nss_db is disabled nss_hesiod is disabled hesiod LHS = "" hesiod RHS = "" nss_ldap is enabled ... |
 
 ## Notes
 
-- Since changed behavior depends on C(authconfig --test) output, this module reports not changed for some options even if changes are made
+- THIS IS EARLY PREVIEW, THINGS MAY CHANGE
+
+- Since changed behavior depends on _authconfig --test_
 
 ## License
 

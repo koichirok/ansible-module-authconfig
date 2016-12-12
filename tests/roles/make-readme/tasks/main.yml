@@ -1,9 +1,10 @@
 ---
 - name: get docs and examples for modules
-  ansible_docstring: path={{role_path}}/../../library/
+  ansible_docstring: path={{role_path}}/../../../library/
   register: modules
 
-#- debug: var=modules
+- debug: var=modules
+  when: make_readme_debug
 
 - name: build web/markdown ansible docs
-  template: src=README.md.j2 dest={{role_path}}/../../README.md
+  template: src=README.md.j2 dest={{role_path}}/../../../README.md

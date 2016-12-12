@@ -436,8 +436,8 @@ options:
 
   enableforcelegacy:
     description:
-      - "When set to **no**, use SSSD implicitly if it supports the
-        configuration. Set to **yes** never use SSSD implicity."
+      - "When set to I(no), use SSSD implicitly if it supports the
+        configuration. Set to I(yes) never use SSSD implicity."
     required: false
     choices: [ "yes", "no" ]
     default: null
@@ -587,6 +587,7 @@ options:
     default: null
     aliases: []
 notes:
+    - THIS IS EARLY PREVIEW, THINGS MAY CHANGE
     - "Since changed behavior depends on I(authconfig --test) output, this
       module reports not changed for some options even if changes are made"
 author:
