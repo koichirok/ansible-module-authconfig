@@ -16,8 +16,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
-
 DOCUMENTATION = '''
 ---
 module: authconfig
@@ -564,28 +562,6 @@ options:
     default: null
     aliases: []
 
-  savebackup:
-    description:
-      - "Save a backup of all configuration files"
-    required: false
-    default: null
-    aliases: []
-
-  restorebackup:
-    description:
-      - "Restore the backup of configuration files"
-    required: false
-    default: null
-    aliases: []
-
-  restorelastbackup:
-    description:
-      - "Restore the backup of configuration files saved before the previous
-         configuration change"
-    required: false
-    choices: [ "yes", "no" ]
-    default: null
-    aliases: []
 notes:
     - THIS IS EARLY PREVIEW, THINGS MAY CHANGE
     - "Since changed behavior depends on I(authconfig --test) output, this
@@ -616,193 +592,232 @@ new_settings_lines:
     type: list
     sample: ["caching is disabled", "nss_files is always enabled", "nss_compat is disabled", "nss_db is disabled", "nss_hesiod is disabled", ' hesiod LHS = ""', ' hesiod RHS = ""', "nss_ldap is enabled", "..."]
 '''
- 
 
-def build_boolean_option(params, key):
-    opt = '--'
-    if params[key]:
-        opt += key
-    else:
-        opt += key.replace('enable', 'disable', 1)
-    return opt
+import re
+from StringIO import StringIO
+from ansible.module_utils.six import iteritems
+import sys
+try:
+    sys.path.append('/usr/share/authconfig')
+    from authconfig import Authconfig
+    import authinfo
+except ImportError:
+    authconfig_found = False
+else:
+    authconfig_found = True
 
+
+#class AnsibleAuthinfo(authconfig.Authinfo):
+#    def diff(self, other):
+
+class AnsibleAuthconfig(Authconfig, object):
+
+    def __init__(self, module):
+        super(AnsibleAuthconfig, self).__init__()
+        self.ansible_module = module
+        self.result = { 'warnings': [], 'rc': 0 }
+
+    def module(self):
+        return "ansible-authconfig"
+
+    def printError(self, error):
+        super(AnsibleAuthconfig, self).printError(error)
+        self.result['warnings'].append("%s: %s\n" % (self.module(), error))
+
+    def parseOptions(self):
+        # building dummy argv
+        argv = ['/usr/sbin/authconfig']
+        if self.ansible_module.check_mode:
+            argv.append('--test')
+        else:
+            argv.append('--update')
+
+        for x in self.ansible_module.params:
+            if self.ansible_module.params[x] is None:
+                continue
+
+            if 'type' in self.ansible_module.argument_spec[x] \
+                   and self.ansible_module.argument_spec[x]['type'] == 'bool':
+                if x in ['nostart', 'restorelastbackup']:
+                    if self.ansible_module.params[x]:
+                        argv.append('--'+x)
+                else:
+                   opt = '--' + x
+                   if not self.ansible_module.params[x]:
+                       opt = opt.replace('enable', 'disable', 1)
+                   argv.append(opt)
+            else:
+                argv.extend(['--'+x, self.ansible_module.params[x]])
+
+        try:
+            try:
+                # replace sys.argv with dummy to work OptionParser#parse_args()
+                bk_argv   = sys.argv
+                sys.argv   = argv
+                super(AnsibleAuthconfig, self).parseOptions()
+            except SystemError:
+                e = get_exception()
+                raise(e)
+        finally:
+            sys.argv   = bk_argv
+
+def run_authconfig(authconfig):
+    rc = -1
+
+    bk_stdout = sys.stdout
+    bk_stderr = sys.stderr
+    sys.stdout = StringIO()
+    sys.stderr = StringIO()
+
+    try:
+        try:
+            rc = authconfig.run()
+            # old Authconfig.run() has no return statement
+            if rc is None:
+                rc = 0
+            authconfig.result['rc'] = rc
+        except SystemExit:
+            e = get_exception()
+            if type(e.args[0]) is int:
+                authconfig.result['rc'] = e.args[0]
+            else:
+                authconfig.result['rc'] = rc # -1
+    finally:
+        authconfig.result['stderr'] = sys.stderr.getvalue()
+        authconfig.result['stdout'] = sys.stdout.getvalue()
+
+        # which is better?
+        # (a)
+        #authconfig.result['warnings'] = authconfig.result['stderr'].splitlines()
+        # (b)
+        #for l in sys.stderr.getvalue().getlines():
+        #    # add error messages written by other than authconfig to warnings
+        #    if l not in authconfig.result['warnings']:
+        #        authconfig.result['warnings'].append(s)
+        sys.stderr = bk_stderr
+        sys.stdout = bk_stdout
+
+    if rc == -1:
+        authconfig.result['msg'] = authconfig.result['stderr']
+        #authconfig.ansible_module.fail_json(msg="\n".join(authconfig.result['warnings']), **authconfig.result)
+        authconfig.ansible_module.fail_json(**authconfig.result)
+
+    return (rc, authconfig.result['stdout'], authconfig.result['stderr'])
 
 def main():
     # authconfig version: RH5=5.3.21/EL6=6.1.12/EL7=6.2.8
-    argspec = dict(
-        enableshadow=dict(required=False, default=None, type='bool'), # support 'useshadow' as alias?
-        enablemd5=dict(required=False, default=None, type='bool'), # support 'usemd5' as alias?
-        passalgo=dict(required=False, default=None, choices=['descrypt', 'bigcrypt', 'md5', 'sha256', 'sha512']),
-        enablenis=dict(required=False, default=None, type='bool'),
-        nisdomain=dict(required=False, default=None, type='str'),
-        nisserver=dict(required=False, default=None, type='str'),
-        enableldap=dict(required=False, default=None, type='bool'),
-        enableldapauth=dict(required=False, default=None, type='bool'),
-        ldapserver=dict(required=False, default=None, type='str'),
-        ldapbasedn=dict(required=False, default=None, type='str'),
-        enableldaptls=dict(required=False, default=None, type='bool'),
-        enablerfc2307bis=dict(required=False, default=None, type='bool'),
-        ldaploadcacert=dict(required=False, default=None),
-        enablesmartcard=dict(required=False, default=None, type='bool'),
-        enablerequiresmartcard=dict(required=False, default=None, type='bool'),
-        smartcardmodule=dict(required=False, default=None, type='str'),
-        smartcardaction=dict(required=False, default=None, choices=['Lock','Ignore']),
-        enablefingerprint=dict(required=False, default=None, type='bool'),
-        enableecryptfs=dict(required=False, default=None, type='bool'),
-        enablekrb5=dict(required=False, default=None, type='bool'),
-        krb5kdc=dict(required=False, default=None, type='str'),
-        krb5adminserver=dict(required=False, default=None, type='str'),
-        krb5realm=dict(required=False, default=None, type='str'),
-        enablekrb5kdcdns=dict(required=False, default=None, type='bool'),
-        enablekrb5realmdns=dict(required=False, default=None, type='bool'),
-        enablewinbind=dict(required=False, default=None, type='bool'),
-        enablewinbindauth=dict(required=False, default=None, type='bool'),
-        smbsecurity=dict(required=False, default=None, choices=['user', 'server', 'domain', 'ads']),
-        smbrealm=dict(required=False, default=None, type='str'),
-        smbservers=dict(required=False, default=None, type='str'),
-        smbworkgroup=dict(required=False, default=None, type='str'),
-        winbindseparator=dict(required=False, default=None, type='str'),
-        winbindtemplatehomedir=dict(required=False, default=None, type='str'),
-        winbindtemplateprimarygroup=dict(required=False, default=None, type='str'),
-        winbindtemplateshell=dict(required=False, default=None, type='str'),
-        enablewinbindusedefaultdomain=dict(required=False, default=None, type='bool'),
-        enablewinbindoffline=dict(required=False, default=None, type='bool'),
-        enablewinbindkrb5=dict(required=False, default=None, type='bool'),
-        winbindjoin=dict(required=False, default=None, type='str'),
-        enableipav2=dict(required=False, default=None, type='bool'),
-        ipav2domain=dict(required=False, default=None, type='str'),
-        ipav2realm=dict(required=False, default=None, type='str'),
-        ipav2server=dict(required=False, default=None, type='str'),
-        enableipav2nontp=dict(required=False, default=None, type='bool'),
-        ipav2join=dict(required=False, default=None, type='str'),
-        enablewins=dict(required=False, default=None, type='bool'),
-        enablepreferdns=dict(required=False, default=None, type='bool'),
-        enablehesiod=dict(required=False, default=None, type='bool'),
-        hesiodlhs=dict(required=False, default=None, type='str'),
-        hesiodrhs=dict(required=False, default=None, type='str'),
-        enablesssd=dict(required=False, default=None, type='bool'),
-        enablesssdauth=dict(required=False, default=None, type='bool'),
-        enableforcelegacy=dict(required=False, default=None, type='bool'),
-        enablecachecreds=dict(required=False, default=None, type='bool'),
-        enablecache=dict(required=False, default=None, type='bool'),
-        enablelocauthorize=dict(required=False, default=None, type='bool'),
-        enablepamaccess=dict(required=False, default=None, type='bool'),
-        enablesysnetauth=dict(required=False, default=None, type='bool'),
-        enablemkhomedir=dict(required=False, default=None, type='bool'),
-        passminlen=dict(required=False, default=None, type='int'),
-        passminclass=dict(required=False, default=None, type='int'),
-        passmaxrepeat=dict(required=False, default=None, type='int'),
-        passmaxclassrepeat=dict(required=False, default=None, type='int'),
-        enablereqlower=dict(required=False, default=None, type='bool'),
-        enablerequpper=dict(required=False, default=None, type='bool'),
-        enablereqdigit=dict(required=False, default=None, type='bool'),
-        enablereqother=dict(required=False, default=None, type='bool'),
-        nostart=dict(required=False, default=None, type='bool'),
-        savebackup=dict(required=False, default=None, type='str'),
-        restorebackup=dict(required=False, default=None, type='str'),
-        restorelastbackup=dict(required=False, default=None, type='bool'),
-    )
-
     module = AnsibleModule(
-        argument_spec=argspec,
+        argument_spec=dict(
+            enableshadow=dict(required=False, default=None, type='bool'), # support 'useshadow' as alias?
+            enablemd5=dict(required=False, default=None, type='bool'), # support 'usemd5' as alias?
+            passalgo=dict(required=False, default=None, choices=['descrypt', 'bigcrypt', 'md5', 'sha256', 'sha512']), # FIXME: use authinfo.password_algorithms for choices
+            enablenis=dict(required=False, default=None, type='bool'),
+            nisdomain=dict(required=False, default=None, type='str'),
+            nisserver=dict(required=False, default=None, type='str'),
+            enableldap=dict(required=False, default=None, type='bool'),
+            enableldapauth=dict(required=False, default=None, type='bool'),
+            ldapserver=dict(required=False, default=None, type='str'),
+            ldapbasedn=dict(required=False, default=None, type='str'),
+            enableldaptls=dict(required=False, default=None, type='bool'),
+            enablerfc2307bis=dict(required=False, default=None, type='bool'),
+            ldaploadcacert=dict(required=False, default=None),
+            enablesmartcard=dict(required=False, default=None, type='bool'),
+            enablerequiresmartcard=dict(required=False, default=None, type='bool'),
+            smartcardmodule=dict(required=False, default=None, type='str'),
+            smartcardaction=dict(required=False, default=None, choices=[0,1]), #0:Lock, 1:Ignore FIXME: use authinfo.getSmartcardActions() for choies
+            enablefingerprint=dict(required=False, default=None, type='bool'),
+            enableecryptfs=dict(required=False, default=None, type='bool'),
+            enablekrb5=dict(required=False, default=None, type='bool'),
+            krb5kdc=dict(required=False, default=None, type='str'),
+            krb5adminserver=dict(required=False, default=None, type='str'),
+            krb5realm=dict(required=False, default=None, type='str'),
+            enablekrb5kdcdns=dict(required=False, default=None, type='bool'),
+            enablekrb5realmdns=dict(required=False, default=None, type='bool'),
+            enablewinbind=dict(required=False, default=None, type='bool'),
+            enablewinbindauth=dict(required=False, default=None, type='bool'),
+            smbsecurity=dict(required=False, default=None, choices=['user', 'server', 'domain', 'ads']),
+            smbrealm=dict(required=False, default=None, type='str',),
+            smbservers=dict(required=False, default=None, type='str'),
+            smbworkgroup=dict(required=False, default=None, type='str'),
+            # idmaprange
+            winbindseparator=dict(required=False, default=None, type='str'),
+            winbindtemplatehomedir=dict(required=False, default=None, type='str'),
+            winbindtemplateprimarygroup=dict(required=False, default=None, type='str'),
+            winbindtemplateshell=dict(required=False, default=None, type='str'),
+            enablewinbindusedefaultdomain=dict(required=False, default=None, type='bool'),
+            enablewinbindoffline=dict(required=False, default=None, type='bool'),
+            enablewinbindkrb5=dict(required=False, default=None, type='bool'),
+            winbindjoin=dict(required=False, default=None, type='str'),
+            enableipav2=dict(required=False, default=None, type='bool'),
+            ipav2domain=dict(required=False, default=None, type='str'),
+            ipav2realm=dict(required=False, default=None, type='str'),
+            ipav2server=dict(required=False, default=None, type='str'),
+            enableipav2nontp=dict(required=False, default=None, type='bool'),
+            ipav2join=dict(required=False, default=None, type='str'),
+            enablewins=dict(required=False, default=None, type='bool'),
+            enablepreferdns=dict(required=False, default=None, type='bool'),
+            enablehesiod=dict(required=False, default=None, type='bool'),
+            hesiodlhs=dict(required=False, default=None, type='str'),
+            hesiodrhs=dict(required=False, default=None, type='str'),
+            enablesssd=dict(required=False, default=None, type='bool'),
+            enablesssdauth=dict(required=False, default=None, type='bool'),
+            enableforcelegacy=dict(required=False, default=None, type='bool'),
+            enablecachecreds=dict(required=False, default=None, type='bool'),
+            enablecache=dict(required=False, default=None, type='bool'),
+            enablelocauthorize=dict(required=False, default=None, type='bool'),
+            enablepamaccess=dict(required=False, default=None, type='bool'),
+            enablesysnetauth=dict(required=False, default=None, type='bool'),
+            enablemkhomedir=dict(required=False, default=None, type='bool'),
+            passminlen=dict(required=False, default=None, type='int'),
+            passminclass=dict(required=False, default=None, type='int'),
+            passmaxrepeat=dict(required=False, default=None, type='int'),
+            passmaxclassrepeat=dict(required=False, default=None, type='int'),
+            enablereqlower=dict(required=False, default=None, type='bool'),
+            enablerequpper=dict(required=False, default=None, type='bool'),
+            enablereqdigit=dict(required=False, default=None, type='bool'),
+            enablereqother=dict(required=False, default=None, type='bool'),
+            nostart=dict(required=False, default=None, type='bool'),
+        ),
         supports_check_mode=True
     )
+    if not authconfig_found:
+        module.fail_json(msg="the authconfig package is required")
 
-    params = module.params
+    # Store current settings
+    dummy = lambda: None
+    setattr(dummy,'params',[])
+    setattr(dummy,'check_mode',True)
+    orig_conf = AnsibleAuthconfig(dummy)
+    rc, out, err = run_authconfig(orig_conf)
 
-    options = []
-    result = dict(changed=False,msg="No options specified",warnings=[])
+    # 
+    new_conf = AnsibleAuthconfig(module)
+    rc, out, err = run_authconfig(new_conf)
 
-    authconfigbin = module.get_bin_path('authconfig')
-    if authconfigbin is None:
-        module.fail_json(msg='authconfig command not found')
+    if module.check_mode:
+        new_conf.result['new_settings'] = out
+        orig_conf.info.update()
+        new_conf.info.update()
+        new_conf.result['changed'] = new_conf.info.differs(orig_conf.info) # use pristineinfo???
+        # XXX: 'authconfig --test' output doesn't contain all options'
+        # information.
+        if module._diff:
+            result['diff'] = {'before': orig_conf.result['stdout'],
+                               'after': out}
+    else:
+        real_new_conf = AnsibleAuthconfig(dummy)
+        rc, out, err = run_authconfig(real_new_conf)
 
-    def run_authconfig(mode='test', options=[], allow_fail=False):
-        cmd = [authconfigbin]
-        cmd.extend(options)
-        cmd.append('--'+mode)
-        rc, out, err = module.run_command(cmd)
+        new_conf.result['new_settings'] = out
+        orig_conf.info.update()
+        real_new_conf.info.update()
+        new_conf.result['changed'] = real_new_conf.info.differs(orig_conf.info) # use pristineinfo???
 
-        if rc != 0 and not allow_fail:
-            module.fail_json(msg='Failed executing command: '+" ".join(cmd),
-                             rc=rc, err=err)
-        return (rc, out, err)
-
-    # Get available options from 'authconfig --help' output.
-    # If each RPM package version of authconfig's supported options list is
-    # available, we should use it.
-    rc, out, err = run_authconfig('help')
-    available_opts = {}
-    for x in out.splitlines():
-        x = x.strip()
-        if not x.startswith('--'):
-            continue
-        x = re.sub(r'   *.*$','', x) # remove description
-        for opt in x.split(', '):
-            # skip --disable* options
-            if opt.startswith('--disable'):
-                continue
-            # remove '=<...>' part
-            if '=' in opt:
-                opt = opt.split('=')[0]
-            available_opts[opt.replace('--', '', 1)] = 1
-
-    for x in params:
-        if params[x] is None:
-            continue
-
-        if x not in available_opts:
-            result['msg']='%s is unsupported by your authconfig version' % x
-            # add option so as not to fail here?
-            module.fail_json(**result)
-
-        if 'type' in argspec[x] and argspec[x]['type'] == 'bool':
-            if x in ['nostart', 'restorelastbackup']:
-                if params[x]:
-                    options.append('--'+x)
-            else:
-                options.append(build_boolean_option(params, x))
-        else:
-            options.extend(['--'+x, params[x]])
-
-    if options:
-        # Get current settings
-        rc, before, err = run_authconfig()
-
-        if module.check_mode:
-            rc, out, err = run_authconfig('test', options)
-            result['changed'] = before != out
-            if module._diff:
-                result['diff'] = {'before': before,
-                                   'after': out}
-            module.exit_json(**result)
-
-        # Update settings
-        rc, out, err = run_authconfig('update', options, True)
-        result['rc'] = rc
-        result['stdout'] = out
-        result['stderr'] = err
-
-        result['warnings'] = []
-        for x in err.splitlines():
-            if x not in ['getsebool:  SELinux is disabled',
-                         'domainname: you must be root to change the domain name']:
-                result['warnings'].append(x)
-
-        # Get new settings here since some settings aren't changed if dependent
-        # tools not installed.(e.g. nss-pam-ldapd, nscd, etc)
-        rc, out, err = run_authconfig('test', [], True)
-        result['new_settings'] = out
-        result['new_settings_lines'] = out.splitlines()
-        result['changed'] = before != out
-
-        if result['rc'] == 0:
-            result['msg'] = "Auth configuration updated."
-        else:
-            result['msg'] = "\n".join(result['warnings'])
-            module.fail_json(**result)
-
-    module.exit_json(**result)
+    if new_conf.result['rc'] == 0:
+        module.exit_json(**new_conf.result)
+    else:
+        new_conf.result['msg'] = "\n".join(new_conf.result['warnings'])
+        module.fail_json(**new_conf.result)
 
 # import module snippets
 from ansible.module_utils.basic import *
