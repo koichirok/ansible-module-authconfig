@@ -27,7 +27,6 @@ TBD.
 | enableipav2  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable IPAv2 for user information and authentication by default  |
 | enablewinbindusedefaultdomain  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Configures winbind to assume that users with no domain in their user names are domain/not domain users  |
 | ldapserver  |   no  |  | |  default LDAP server hostname or URI  |
-| restorelastbackup  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Restore the backup of configuration files saved before the previous configuration change  |
 | enablepreferdns  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Prefer/Do not prefer dns over wins or nis for hostname resolution  |
 | krb5kdc  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Specify default kerberos KDC  |
 | ldapbasedn  |   no  |  | |  default LDAP base DN  |
@@ -39,9 +38,7 @@ TBD.
 | ipav2domain  |   no  |  | |  Specify the IPAv2 domain the system should be part of  |
 | enableshadow  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable shadowed passwords by default  |
 | enablefingerprint  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable authentication with fingerprint readers by default  |
-| savebackup  |   no  |  | |  Save a backup of all configuration files  |
 | enablekrb5kdcdns  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Enable/Disable use of DNS to find kerberos KDCs  |
-| restorebackup  |   no  |  | |  Restore the backup of configuration files  |
 | passmaxrepeat  |   no  |  | |  Specify maximum number of same consecutive characters in a password  |
 | krb5realm  |   no  |  | <ul> <li>yes</li>  <li>no</li> </ul> |  Specify default kerberos realm  |
 | winbindjoin  |   no  |  | |  Specify administrator account to Join the winbind domain or ads realm now  |
