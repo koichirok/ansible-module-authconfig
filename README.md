@@ -8,7 +8,18 @@ Manages system authentication resources with _authconfig_
 
 ## Install
 
-TBD.
+```
+$ ansible-galaxy install koichirok.authconfig-module
+```
+
+```yaml
+# playbook.yml
+
+- hosts: default
+  roles:
+  # After you call this role, you can use this module.
+  - koichirok.authconfig-module
+```
 
 ## Synopsis
  Configurering system authentication resources with _authconfig(8)_

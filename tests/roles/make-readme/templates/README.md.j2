@@ -15,7 +15,18 @@
 
 ## Install
 
-TBD.
+```
+$ ansible-galaxy install koichirok.authconfig-module
+```
+
+```yaml
+# playbook.yml
+
+- hosts: default
+  roles:
+  # After you call this role, you can use this module.
+  - koichirok.authconfig-module
+```
 
 ## Synopsis
 {% for each in doc['description'] %} {{ each | markdown_ify }}

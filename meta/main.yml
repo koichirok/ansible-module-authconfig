@@ -1,11 +1,11 @@
 galaxy_info:
   author: KIKUCHI Koichiro
   description: authconfig module
-  license: license (MIT, BSD)
+  license: GPL3
 
-  min_ansible_version: 2.0
+  min_ansible_version: 2.0.2
 
-  #platforms:
+  platforms:
   #- name: Fedora
   #  versions:
   #  - all
@@ -18,13 +18,12 @@ galaxy_info:
   #  - 22
   #  - 23
   #  - 24
-  #- name: EL
-  #  versions:
-  #  - all
-  #  - 5
-  #  - 6
-  #  - 7
+  - name: EL
+    versions:
+    - 5
+    - 6
+    - 7
 
-  galaxy_tags: []
+  galaxy_tags: [system]
 
 dependencies: []
