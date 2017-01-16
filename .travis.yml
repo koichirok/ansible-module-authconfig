@@ -16,15 +16,17 @@ addons:
 
 before_install:
   - env
-  - echo '[all]' > hosts
+  - set -x
+  - echo '[all]' | tee hosts
   - |
-    for i in 7 6 5; do
+    for i in 5 6 7; do
+      echo centos$i | tee -a hosts
       # runlevel(8) hack. centos5's runlevel(8) needs to execute /sbin/init
       docker run --name centos$i -di centos:$i /sbin/init
       if [ $i = 5 ]; then
         docker exec centos$i yum install -y python-simplejson
       fi
-      echo centos$i >> hosts
+      docker exec centos$i cat /etc/redhat-release
     done
 
 install:
