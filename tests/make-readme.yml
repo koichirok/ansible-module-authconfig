@@ -6,7 +6,7 @@
 
   vars:
     clean: True
-    heading: 'Andible authconfig module'
+    heading: 'koichirok.authconfig-module - Ansible authconfig module'
     requirements:
       - 'authconfig package'
 

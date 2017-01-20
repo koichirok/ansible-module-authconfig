@@ -1,5 +1,6 @@
-# Andible authconfig module
+# koichirok.authconfig-module - Ansible authconfig module
 [![Travis](https://travis-ci.org/koichirok/ansible-module-authconfig.svg?branch=master)](https://travis-ci.org/koichirok/ansible-module-authconfig)
+[![Ansible Module](https://img.shields.io/ansible/role/14945.svg?label=module)](https://galaxy.ansible.com/koichirok/authconfig-module/)
 
 Manages system authentication resources with _authconfig_
 
