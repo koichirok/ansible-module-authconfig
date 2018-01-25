@@ -802,8 +802,8 @@ def main():
         # XXX: 'authconfig --test' output doesn't contain all options'
         # information.
         if module._diff:
-            result['diff'] = {'before': orig_conf.result['stdout'],
-                               'after': out}
+            new_conf.result['diff'] = {'before': orig_conf.result['stdout'],
+                                       'after': out}
     else:
         real_new_conf = AnsibleAuthconfig(dummy)
         rc, out, err = run_authconfig(real_new_conf)
