@@ -24,7 +24,7 @@ before_install:
       if [ $i = 5 ]; then
         # runlevel(8) hack. centos5's runlevel(8) needs to execute /sbin/init
         docker run --name centos$i -di centos:$i /sbin/init
-        docker exec centos$i sed -i -e '/^mirrorlist=/d' -e 's,^#baseurl=.*releasever,baseurl=http://vault.centos.org/5.11,' /etc/yum.repos.d/*.repo
+        docker exec centos$i sh -c "sed -i -e '/^mirrorlist=/d' -e 's,^#baseurl=.*releasever,baseurl=http://vault.centos.org/5.11,' /etc/yum.repos.d/*.repo"
         docker exec centos$i yum install -y epel-release
         docker exec centos$i yum install -y python26
       else
