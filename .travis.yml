@@ -31,10 +31,11 @@ before_install:
 
 install:
   - SITE_PACKAGES_DIR=$(pip --version | awk '{print $4}')
-  - pip install git+https://github.com/ansible/ansible.git@devel#egg=ansible
+  #- pip install git+https://github.com/ansible/ansible.git@devel#egg=ansible
+  - pip install ansible
   - pip install git+https://github.com/sivel/ansible-testing.git#egg=ansible_testing
   - echo $SITE_PACKAGES_DIR
-  - cat tests/patch-lib::ansible::template::__init__.py | (cd "$SITE_PACKAGES_DIR"; patch -p0)
+  - cat tests/patch-lib::ansible::template::__init__.py | (cd "$SITE_PACKAGES_DIR"; patch -p0 --ignore-whitespace)
   - ansible --version
   - printf '[defaults]\nroles_path=../:tests/roles' | tee ansible.cfg
   - cat hosts
