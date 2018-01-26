@@ -1,4 +1,6 @@
 ---
+ansible_python_interpreter: /usr/bin/python26
+
 required_packages:
   - authconfig
   - python-simplejson
