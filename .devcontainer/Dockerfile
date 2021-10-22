@@ -17,7 +17,7 @@ ARG MOLECULE_VERSION=latest
 
 RUN set -e; \
     ver_suffix(){ [ "${1#latest}" ] && echo "==$1";}; \
-    # Unset DISPLAY so that pip does not give WSL2 a super high load.
+    # Unset DISPLAY so that pip does not give WSL2 a extreamly heavy work load.
     # see: https://stackoverflow.com/questions/68016708/on-wsl2-pip-install-virtualenv-comand-hangs-for-too-long
     DISPLAY=; \
     pip install --no-cache-dir -U pip; \
