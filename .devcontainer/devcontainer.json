@@ -12,7 +12,9 @@
 			// Use -bullseye variants on local on arm64/Apple Silicon.
 			"VARIANT": "3.10-bullseye",
 			// Options
-			"NODE_VERSION": "none"
+			"NODE_VERSION": "none",
+			"ANSIBLE_VERSION": "latest",
+			"MOLECULE_VERSION": "latest",
 		}
 	},
 
