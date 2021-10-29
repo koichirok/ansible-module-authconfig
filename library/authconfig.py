@@ -597,71 +597,86 @@ import re
 from StringIO import StringIO
 from ansible.module_utils.six import iteritems
 import sys
+import os
+
+# https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path?rq=1
+def import_absolute_path(absolute_path):
+    # pylint: disable=import-outside-toplevel
+    mod_name = os.path.basename(os.path.splitext(absolute_path)[0])
+    if sys.version.startswith('2.'):
+        # pylint: disable=deprecated-module
+        import imp
+        return imp.load_source(mod_name, absolute_path)
+    elif re.match('^3.[34]\\.', sys.version):
+        # pylint: disable=deprecated-method
+        from importlib.machinery import SourceFileLoader
+        return SourceFileLoader(mod_name, absolute_path).load_module(None)
+    elif sys.version.startswith('3.'):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(mod_name, absolute_path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
 try:
     sys.path.append('/usr/share/authconfig')
-    from authconfig import Authconfig
-    import authinfo
+    authconfig = import_absolute_path('/usr/share/authconfig/authconfig.py')
+    authconfig_found = True
 except ImportError:
     authconfig_found = False
-else:
-    authconfig_found = True
 
+if authconfig_found:
+    class AnsibleAuthconfig(authconfig.Authconfig, object):
 
-#class AnsibleAuthinfo(authconfig.Authinfo):
-#    def diff(self, other):
+        def __init__(self, module):
+            super(AnsibleAuthconfig, self).__init__()
+            self.ansible_module = module
+            self.result = { 'warnings': [], 'rc': 0 }
 
-class AnsibleAuthconfig(Authconfig, object):
+        def module(self):
+            return "ansible-authconfig"
 
-    def __init__(self, module):
-        super(AnsibleAuthconfig, self).__init__()
-        self.ansible_module = module
-        self.result = { 'warnings': [], 'rc': 0 }
+        def printError(self, error):
+            super(AnsibleAuthconfig, self).printError(error)
+            self.result['warnings'].append("%s: %s\n" % (self.module(), error))
 
-    def module(self):
-        return "ansible-authconfig"
-
-    def printError(self, error):
-        super(AnsibleAuthconfig, self).printError(error)
-        self.result['warnings'].append("%s: %s\n" % (self.module(), error))
-
-    def parseOptions(self):
-        # building dummy argv
-        argv = ['/usr/sbin/authconfig']
-        if self.ansible_module.check_mode:
-            argv.append('--test')
-        else:
-            argv.append('--update')
-
-        for x in self.ansible_module.params:
-            if self.ansible_module.params[x] is None:
-                continue
-
-            if 'type' in self.ansible_module.argument_spec[x] \
-                   and self.ansible_module.argument_spec[x]['type'] == 'bool':
-                if x in ['nostart', 'restorelastbackup']:
-                    if self.ansible_module.params[x]:
-                        argv.append('--'+x)
-                else:
-                   opt = '--' + x
-                   if not self.ansible_module.params[x]:
-                       opt = opt.replace('enable', 'disable', 1)
-                   argv.append(opt)
+        def parseOptions(self):
+            # building dummy argv
+            argv = ['/usr/sbin/authconfig']
+            if self.ansible_module.check_mode:
+                argv.append('--test')
             else:
-                argv.extend(['--'+x, self.ansible_module.params[x]])
+                argv.append('--update')
 
-        try:
+            for x in self.ansible_module.params:
+                if self.ansible_module.params[x] is None:
+                    continue
+
+                if 'type' in self.ansible_module.argument_spec[x] \
+                      and self.ansible_module.argument_spec[x]['type'] == 'bool':
+                    if x in ['nostart', 'restorelastbackup']:
+                        if self.ansible_module.params[x]:
+                            argv.append('--'+x)
+                    else:
+                      opt = '--' + x
+                      if not self.ansible_module.params[x]:
+                          opt = opt.replace('enable', 'disable', 1)
+                      argv.append(opt)
+                else:
+                    argv.extend(['--'+x, self.ansible_module.params[x]])
+
             try:
-                # replace sys.argv with dummy to work OptionParser#parse_args()
-                bk_argv   = sys.argv
-                sys.argv   = argv
-                super(AnsibleAuthconfig, self).parseOptions()
-            except SystemError:
-                e = get_exception()
-                raise(e)
-        finally:
-            sys.argv   = bk_argv
+                try:
+                    # replace sys.argv with dummy to work OptionParser#parse_args()
+                    bk_argv   = sys.argv
+                    sys.argv   = argv
+                    super(AnsibleAuthconfig, self).parseOptions()
+                except SystemError:
+                    e = get_exception()
+                    raise(e)
+            finally:
+                sys.argv   = bk_argv
 
-def run_authconfig(authconfig):
+def run_authconfig(authconfig_object):
     rc = -1
 
     bk_stdout = sys.stdout
@@ -671,20 +686,20 @@ def run_authconfig(authconfig):
 
     try:
         try:
-            rc = authconfig.run()
+            rc = authconfig_object.run()
             # old Authconfig.run() has no return statement
             if rc is None:
                 rc = 0
-            authconfig.result['rc'] = rc
+            authconfig_object.result['rc'] = rc
         except SystemExit:
             e = get_exception()
             if type(e.args[0]) is int:
-                authconfig.result['rc'] = e.args[0]
+                authconfig_object.result['rc'] = e.args[0]
             else:
-                authconfig.result['rc'] = rc # -1
+                authconfig_object.result['rc'] = rc # -1
     finally:
-        authconfig.result['stderr'] = sys.stderr.getvalue()
-        authconfig.result['stdout'] = sys.stdout.getvalue()
+        authconfig_object.result['stderr'] = sys.stderr.getvalue()
+        authconfig_object.result['stdout'] = sys.stdout.getvalue()
 
         # which is better?
         # (a)
@@ -698,11 +713,11 @@ def run_authconfig(authconfig):
         sys.stdout = bk_stdout
 
     if rc == -1:
-        authconfig.result['msg'] = authconfig.result['stderr']
+        authconfig_object.result['msg'] = authconfig_object.result['stderr']
         #authconfig.ansible_module.fail_json(msg="\n".join(authconfig.result['warnings']), **authconfig.result)
-        authconfig.ansible_module.fail_json(**authconfig.result)
+        authconfig_object.ansible_module.fail_json(**authconfig_object.result)
 
-    return (rc, authconfig.result['stdout'], authconfig.result['stderr'])
+    return (rc, authconfig_object.result['stdout'], authconfig_object.result['stderr'])
 
 def main():
     # authconfig version: RH5=5.3.21/EL6=6.1.12/EL7=6.2.8
@@ -781,7 +796,7 @@ def main():
         supports_check_mode=True
     )
     if not authconfig_found:
-        module.fail_json(msg="the authconfig package is required")
+        module.fail_json(msg="the authconfig package is required: {}".format(get_exception()))
 
     # Store current settings
     dummy = lambda: None
