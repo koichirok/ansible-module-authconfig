@@ -1,4 +1,6 @@
 galaxy_info:
+  role_name: authconfig_module
+  namespace: koichirok  
   author: KIKUCHI Koichiro
   description: authconfig module
   license: GPL3
