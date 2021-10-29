@@ -1,0 +1,29 @@
+---
+- name: "enablerequiresmartcard | Change setting by enablerequiresmartcard=yes"
+  authconfig: "enablerequiresmartcard=yes"
+  register: result
+
+- name: "enablerequiresmartcard | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablerequiresmartcard | Assert 'use only smartcard for login is enabled' in new settings"
+  assert:
+    that:
+      - '"use only smartcard for login is enabled" in result.new_settings'
+
+- name: "enablerequiresmartcard | Restore setting by enablerequiresmartcard=no"
+  authconfig: "enablerequiresmartcard=no"
+  register: result
+
+- name: "enablerequiresmartcard | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablerequiresmartcard | Assert 'use only smartcard for login is disabled' in new settings"
+  assert:
+    that:
+      - '"use only smartcard for login is disabled" in result.new_settings'
+

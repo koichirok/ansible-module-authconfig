@@ -1,0 +1,29 @@
+---
+- name: "smbservers | Change setting by smbservers=yes"
+  authconfig: "smbservers=yes"
+  register: result
+
+- name: "smbservers | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbservers | Assert 'SMB servers enabled' in new settings"
+  assert:
+    that:
+      - '"SMB servers enabled" in result.new_settings'
+
+- name: "smbservers | Restore setting by smbservers=no"
+  authconfig: "smbservers=no"
+  register: result
+
+- name: "smbservers | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbservers | Assert 'SMB servers disabled' in new settings"
+  assert:
+    that:
+      - '"SMB servers disabled" in result.new_settings'
+

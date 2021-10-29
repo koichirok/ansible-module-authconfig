@@ -1,0 +1,29 @@
+---
+- name: "enablepamaccess | Change setting by enablepamaccess=yes"
+  authconfig: "enablepamaccess=yes"
+  register: result
+
+- name: "enablepamaccess | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablepamaccess | Assert 'pam_access is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_access is enabled" in result.new_settings'
+
+- name: "enablepamaccess | Restore setting by enablepamaccess=no"
+  authconfig: "enablepamaccess=no"
+  register: result
+
+- name: "enablepamaccess | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablepamaccess | Assert 'pam_access is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_access is disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "enablesysnetauth | Change setting by enablesysnetauth=yes"
+  authconfig: "enablesysnetauth=yes"
+  register: result
+
+- name: "enablesysnetauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesysnetauth | Assert 'Authenticate system accounts against network services is enabled' in new settings"
+  assert:
+    that:
+      - '"Authenticate system accounts against network services is enabled" in result.new_settings'
+
+- name: "enablesysnetauth | Restore setting by enablesysnetauth=no"
+  authconfig: "enablesysnetauth=no"
+  register: result
+
+- name: "enablesysnetauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesysnetauth | Assert 'Authenticate system accounts against network services is disabled' in new settings"
+  assert:
+    that:
+      - '"Authenticate system accounts against network services is disabled" in result.new_settings'
+

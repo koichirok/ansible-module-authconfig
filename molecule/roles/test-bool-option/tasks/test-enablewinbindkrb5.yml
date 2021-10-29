@@ -1,0 +1,29 @@
+---
+- name: "enablewinbindkrb5 | Change setting by enablewinbindkrb5=yes"
+  authconfig: "enablewinbindkrb5=yes"
+  register: result
+
+- name: "enablewinbindkrb5 | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindkrb5 | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "enablewinbindkrb5 | Restore setting by enablewinbindkrb5=no"
+  authconfig: "enablewinbindkrb5=no"
+  register: result
+
+- name: "enablewinbindkrb5 | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindkrb5 | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

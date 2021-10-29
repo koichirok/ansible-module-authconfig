@@ -1,0 +1,29 @@
+---
+- name: "enablecache | Change setting by enablecache=yes"
+  authconfig: "enablecache=yes"
+  register: result
+
+- name: "enablecache | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablecache | Assert 'caching is enabled' in new settings"
+  assert:
+    that:
+      - '"caching is enabled" in result.new_settings'
+
+- name: "enablecache | Restore setting by enablecache=no"
+  authconfig: "enablecache=no"
+  register: result
+
+- name: "enablecache | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablecache | Assert 'caching is disabled' in new settings"
+  assert:
+    that:
+      - '"caching is disabled" in result.new_settings'
+

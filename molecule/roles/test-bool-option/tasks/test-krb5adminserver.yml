@@ -1,0 +1,29 @@
+---
+- name: "krb5adminserver | Change setting by krb5adminserver=yes"
+  authconfig: "krb5adminserver=yes"
+  register: result
+
+- name: "krb5adminserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5adminserver | Assert 'krb5 admin server enabled' in new settings"
+  assert:
+    that:
+      - '"krb5 admin server enabled" in result.new_settings'
+
+- name: "krb5adminserver | Restore setting by krb5adminserver=no"
+  authconfig: "krb5adminserver=no"
+  register: result
+
+- name: "krb5adminserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5adminserver | Assert 'krb5 admin server disabled' in new settings"
+  assert:
+    that:
+      - '"krb5 admin server disabled" in result.new_settings'
+

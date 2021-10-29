@@ -1,0 +1,29 @@
+---
+- name: "passminclass | Change setting by passminclass=yes"
+  authconfig: "passminclass=yes"
+  register: result
+
+- name: "passminclass | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passminclass | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "passminclass | Restore setting by passminclass=no"
+  authconfig: "passminclass=no"
+  register: result
+
+- name: "passminclass | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passminclass | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

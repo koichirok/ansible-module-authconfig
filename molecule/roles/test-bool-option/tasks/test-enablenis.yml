@@ -1,0 +1,29 @@
+---
+- name: "enablenis | Change setting by enablenis=yes"
+  authconfig: "enablenis=yes"
+  register: result
+
+- name: "enablenis | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablenis | Assert 'nss_nis is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_nis is enabled" in result.new_settings'
+
+- name: "enablenis | Restore setting by enablenis=no"
+  authconfig: "enablenis=no"
+  register: result
+
+- name: "enablenis | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablenis | Assert 'nss_nis is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_nis is disabled" in result.new_settings'
+

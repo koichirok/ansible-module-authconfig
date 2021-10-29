@@ -1,0 +1,29 @@
+---
+- name: "winbindseparator | Change setting by winbindseparator=yes"
+  authconfig: "winbindseparator=yes"
+  register: result
+
+- name: "winbindseparator | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindseparator | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "winbindseparator | Restore setting by winbindseparator=no"
+  authconfig: "winbindseparator=no"
+  register: result
+
+- name: "winbindseparator | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindseparator | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

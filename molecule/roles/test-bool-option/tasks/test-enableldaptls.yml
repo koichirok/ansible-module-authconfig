@@ -1,0 +1,29 @@
+---
+- name: "enableldaptls | Change setting by enableldaptls=no"
+  authconfig: "enableldaptls=no"
+  register: result
+
+- name: "enableldaptls | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldaptls | Assert 'LDAP+TLS is disabled' in new settings"
+  assert:
+    that:
+      - '"LDAP+TLS is disabled" in result.new_settings'
+
+- name: "enableldaptls | Restore setting by enableldaptls=yes"
+  authconfig: "enableldaptls=yes"
+  register: result
+
+- name: "enableldaptls | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldaptls | Assert 'LDAP+TLS is enabled' in new settings"
+  assert:
+    that:
+      - '"LDAP+TLS is enabled" in result.new_settings'
+

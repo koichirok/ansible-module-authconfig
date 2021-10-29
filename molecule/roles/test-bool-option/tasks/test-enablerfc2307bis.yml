@@ -1,0 +1,29 @@
+---
+- name: "enablerfc2307bis | Change setting by enablerfc2307bis=yes"
+  authconfig: "enablerfc2307bis=yes"
+  register: result
+
+- name: "enablerfc2307bis | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablerfc2307bis | Assert 'LDAP schema enabled' in new settings"
+  assert:
+    that:
+      - '"LDAP schema enabled" in result.new_settings'
+
+- name: "enablerfc2307bis | Restore setting by enablerfc2307bis=no"
+  authconfig: "enablerfc2307bis=no"
+  register: result
+
+- name: "enablerfc2307bis | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablerfc2307bis | Assert 'LDAP schema disabled' in new settings"
+  assert:
+    that:
+      - '"LDAP schema disabled" in result.new_settings'
+

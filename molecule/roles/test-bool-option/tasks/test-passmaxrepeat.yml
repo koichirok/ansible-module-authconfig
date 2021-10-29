@@ -1,0 +1,29 @@
+---
+- name: "passmaxrepeat | Change setting by passmaxrepeat=yes"
+  authconfig: "passmaxrepeat=yes"
+  register: result
+
+- name: "passmaxrepeat | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passmaxrepeat | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "passmaxrepeat | Restore setting by passmaxrepeat=no"
+  authconfig: "passmaxrepeat=no"
+  register: result
+
+- name: "passmaxrepeat | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passmaxrepeat | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

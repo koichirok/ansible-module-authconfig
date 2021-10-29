@@ -1,0 +1,29 @@
+---
+- name: "enablesssdauth | Change setting by enablesssdauth=yes"
+  authconfig: "enablesssdauth=yes"
+  register: result
+
+- name: "enablesssdauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesssdauth | Assert 'pam_sss is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_sss is enabled" in result.new_settings'
+
+- name: "enablesssdauth | Restore setting by enablesssdauth=no"
+  authconfig: "enablesssdauth=no"
+  register: result
+
+- name: "enablesssdauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesssdauth | Assert 'pam_sss is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_sss is disabled" in result.new_settings'
+

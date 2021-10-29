@@ -1,0 +1,29 @@
+---
+- name: "winbindjoin | Change setting by winbindjoin=yes"
+  authconfig: "winbindjoin=yes"
+  register: result
+
+- name: "winbindjoin | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindjoin | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "winbindjoin | Restore setting by winbindjoin=no"
+  authconfig: "winbindjoin=no"
+  register: result
+
+- name: "winbindjoin | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindjoin | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

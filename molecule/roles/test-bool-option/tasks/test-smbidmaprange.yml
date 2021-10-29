@@ -1,0 +1,29 @@
+---
+- name: "smbidmaprange | Change setting by smbidmaprange=yes"
+  authconfig: "smbidmaprange=yes"
+  register: result
+
+- name: "smbidmaprange | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbidmaprange | Assert 'SMB idmap range enabled' in new settings"
+  assert:
+    that:
+      - '"SMB idmap range enabled" in result.new_settings'
+
+- name: "smbidmaprange | Restore setting by smbidmaprange=no"
+  authconfig: "smbidmaprange=no"
+  register: result
+
+- name: "smbidmaprange | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbidmaprange | Assert 'SMB idmap range disabled' in new settings"
+  assert:
+    that:
+      - '"SMB idmap range disabled" in result.new_settings'
+

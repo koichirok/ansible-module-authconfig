@@ -1,0 +1,29 @@
+---
+- name: "enableforcelegacy | Change setting by enableforcelegacy=no"
+  authconfig: "enableforcelegacy=no"
+  register: result
+
+- name: "enableforcelegacy | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enableforcelegacy | Assert 'SSSD use instead of legacy services if possible is disabled' in new settings"
+  assert:
+    that:
+      - '"SSSD use instead of legacy services if possible is disabled" in result.new_settings'
+
+- name: "enableforcelegacy | Restore setting by enableforcelegacy=yes"
+  authconfig: "enableforcelegacy=yes"
+  register: result
+
+- name: "enableforcelegacy | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enableforcelegacy | Assert 'SSSD use instead of legacy services if possible is enabled' in new settings"
+  assert:
+    that:
+      - '"SSSD use instead of legacy services if possible is enabled" in result.new_settings'
+

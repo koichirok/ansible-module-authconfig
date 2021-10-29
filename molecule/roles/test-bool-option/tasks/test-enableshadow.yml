@@ -1,0 +1,29 @@
+---
+- name: "enableshadow | Change setting by enableshadow=no"
+  authconfig: "enableshadow=no"
+  register: result
+
+- name: "enableshadow | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableshadow | Assert 'shadow passwords are disabled' in new settings"
+  assert:
+    that:
+      - '"shadow passwords are disabled" in result.new_settings'
+
+- name: "enableshadow | Restore setting by enableshadow=yes"
+  authconfig: "enableshadow=yes"
+  register: result
+
+- name: "enableshadow | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableshadow | Assert 'shadow passwords are enabled' in new settings"
+  assert:
+    that:
+      - '"shadow passwords are enabled" in result.new_settings'
+

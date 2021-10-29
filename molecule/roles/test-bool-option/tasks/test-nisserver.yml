@@ -1,0 +1,29 @@
+---
+- name: "nisserver | Change setting by nisserver=yes"
+  authconfig: "nisserver=yes"
+  register: result
+
+- name: "nisserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "nisserver | Assert 'NIS server enabled' in new settings"
+  assert:
+    that:
+      - '"NIS server enabled" in result.new_settings'
+
+- name: "nisserver | Restore setting by nisserver=no"
+  authconfig: "nisserver=no"
+  register: result
+
+- name: "nisserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "nisserver | Assert 'NIS server disabled' in new settings"
+  assert:
+    that:
+      - '"NIS server disabled" in result.new_settings'
+

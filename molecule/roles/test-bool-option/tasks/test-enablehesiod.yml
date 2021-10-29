@@ -1,0 +1,29 @@
+---
+- name: "enablehesiod | Change setting by enablehesiod=yes"
+  authconfig: "enablehesiod=yes"
+  register: result
+
+- name: "enablehesiod | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablehesiod | Assert 'nss_hesiod is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_hesiod is enabled" in result.new_settings'
+
+- name: "enablehesiod | Restore setting by enablehesiod=no"
+  authconfig: "enablehesiod=no"
+  register: result
+
+- name: "enablehesiod | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablehesiod | Assert 'nss_hesiod is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_hesiod is disabled" in result.new_settings'
+

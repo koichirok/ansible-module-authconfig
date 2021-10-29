@@ -1,0 +1,29 @@
+---
+- name: "enablewinbindauth | Change setting by enablewinbindauth=yes"
+  authconfig: "enablewinbindauth=yes"
+  register: result
+
+- name: "enablewinbindauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewinbindauth | Assert 'pam_winbind is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_winbind is enabled" in result.new_settings'
+
+- name: "enablewinbindauth | Restore setting by enablewinbindauth=no"
+  authconfig: "enablewinbindauth=no"
+  register: result
+
+- name: "enablewinbindauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewinbindauth | Assert 'pam_winbind is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_winbind is disabled" in result.new_settings'
+

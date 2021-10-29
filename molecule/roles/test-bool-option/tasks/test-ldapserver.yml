@@ -1,0 +1,29 @@
+---
+- name: "ldapserver | Change setting by ldapserver=yes"
+  authconfig: "ldapserver=yes"
+  register: result
+
+- name: "ldapserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ldapserver | Assert 'LDAP server enabled' in new settings"
+  assert:
+    that:
+      - '"LDAP server enabled" in result.new_settings'
+
+- name: "ldapserver | Restore setting by ldapserver=no"
+  authconfig: "ldapserver=no"
+  register: result
+
+- name: "ldapserver | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ldapserver | Assert 'LDAP server disabled' in new settings"
+  assert:
+    that:
+      - '"LDAP server disabled" in result.new_settings'
+

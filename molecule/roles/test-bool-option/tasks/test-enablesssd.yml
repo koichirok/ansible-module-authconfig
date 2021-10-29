@@ -1,0 +1,29 @@
+---
+- name: "enablesssd | Change setting by enablesssd=no"
+  authconfig: "enablesssd=no"
+  register: result
+
+- name: "enablesssd | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesssd | Assert 'nss_sss is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_sss is disabled" in result.new_settings'
+
+- name: "enablesssd | Restore setting by enablesssd=yes"
+  authconfig: "enablesssd=yes"
+  register: result
+
+- name: "enablesssd | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesssd | Assert 'nss_sss is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_sss is enabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "ldapbasedn | Change setting by ldapbasedn=yes"
+  authconfig: "ldapbasedn=yes"
+  register: result
+
+- name: "ldapbasedn | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ldapbasedn | Assert 'LDAP base DN enabled' in new settings"
+  assert:
+    that:
+      - '"LDAP base DN enabled" in result.new_settings'
+
+- name: "ldapbasedn | Restore setting by ldapbasedn=no"
+  authconfig: "ldapbasedn=no"
+  register: result
+
+- name: "ldapbasedn | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ldapbasedn | Assert 'LDAP base DN disabled' in new settings"
+  assert:
+    that:
+      - '"LDAP base DN disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "enablemd5 | Change setting by enablemd5=yes"
+  authconfig: "enablemd5=yes"
+  register: result
+
+- name: "enablemd5 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablemd5 | Assert 'password hashing algorithm is enabled' in new settings"
+  assert:
+    that:
+      - '"password hashing algorithm is enabled" in result.new_settings'
+
+- name: "enablemd5 | Restore setting by enablemd5=no"
+  authconfig: "enablemd5=no"
+  register: result
+
+- name: "enablemd5 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablemd5 | Assert 'password hashing algorithm is disabled' in new settings"
+  assert:
+    that:
+      - '"password hashing algorithm is disabled" in result.new_settings'
+

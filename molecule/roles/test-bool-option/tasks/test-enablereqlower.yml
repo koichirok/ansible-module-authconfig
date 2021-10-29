@@ -1,0 +1,29 @@
+---
+- name: "enablereqlower | Change setting by enablereqlower=yes"
+  authconfig: "enablereqlower=yes"
+  register: result
+
+- name: "enablereqlower | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablereqlower | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "enablereqlower | Restore setting by enablereqlower=no"
+  authconfig: "enablereqlower=no"
+  register: result
+
+- name: "enablereqlower | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablereqlower | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

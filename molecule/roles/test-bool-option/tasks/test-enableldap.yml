@@ -1,0 +1,29 @@
+---
+- name: "enableldap | Change setting by enableldap=yes"
+  authconfig: "enableldap=yes"
+  register: result
+
+- name: "enableldap | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldap | Assert 'nss_ldap is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_ldap is enabled" in result.new_settings'
+
+- name: "enableldap | Restore setting by enableldap=no"
+  authconfig: "enableldap=no"
+  register: result
+
+- name: "enableldap | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldap | Assert 'nss_ldap is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_ldap is disabled" in result.new_settings'
+

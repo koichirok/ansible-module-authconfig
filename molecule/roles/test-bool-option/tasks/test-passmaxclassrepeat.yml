@@ -1,0 +1,29 @@
+---
+- name: "passmaxclassrepeat | Change setting by passmaxclassrepeat=yes"
+  authconfig: "passmaxclassrepeat=yes"
+  register: result
+
+- name: "passmaxclassrepeat | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passmaxclassrepeat | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "passmaxclassrepeat | Restore setting by passmaxclassrepeat=no"
+  authconfig: "passmaxclassrepeat=no"
+  register: result
+
+- name: "passmaxclassrepeat | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "passmaxclassrepeat | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

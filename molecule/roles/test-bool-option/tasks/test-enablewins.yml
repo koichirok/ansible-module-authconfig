@@ -1,0 +1,29 @@
+---
+- name: "enablewins | Change setting by enablewins=yes"
+  authconfig: "enablewins=yes"
+  register: result
+
+- name: "enablewins | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewins | Assert 'nss_wins is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_wins is enabled" in result.new_settings'
+
+- name: "enablewins | Restore setting by enablewins=no"
+  authconfig: "enablewins=no"
+  register: result
+
+- name: "enablewins | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewins | Assert 'nss_wins is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_wins is disabled" in result.new_settings'
+

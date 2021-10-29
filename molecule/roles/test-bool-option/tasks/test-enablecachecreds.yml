@@ -1,0 +1,29 @@
+---
+- name: "enablecachecreds | Change setting by enablecachecreds=no"
+  authconfig: "enablecachecreds=no"
+  register: result
+
+- name: "enablecachecreds | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablecachecreds | Assert 'credential caching in SSSD is disabled' in new settings"
+  assert:
+    that:
+      - '"credential caching in SSSD is disabled" in result.new_settings'
+
+- name: "enablecachecreds | Restore setting by enablecachecreds=yes"
+  authconfig: "enablecachecreds=yes"
+  register: result
+
+- name: "enablecachecreds | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablecachecreds | Assert 'credential caching in SSSD is enabled' in new settings"
+  assert:
+    that:
+      - '"credential caching in SSSD is enabled" in result.new_settings'
+

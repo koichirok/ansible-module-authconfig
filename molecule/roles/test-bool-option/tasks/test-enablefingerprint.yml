@@ -1,0 +1,29 @@
+---
+- name: "enablefingerprint | Change setting by enablefingerprint=yes"
+  authconfig: "enablefingerprint=yes"
+  register: result
+
+- name: "enablefingerprint | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablefingerprint | Assert 'pam_fprintd is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_fprintd is enabled" in result.new_settings'
+
+- name: "enablefingerprint | Restore setting by enablefingerprint=no"
+  authconfig: "enablefingerprint=no"
+  register: result
+
+- name: "enablefingerprint | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablefingerprint | Assert 'pam_fprintd is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_fprintd is disabled" in result.new_settings'
+

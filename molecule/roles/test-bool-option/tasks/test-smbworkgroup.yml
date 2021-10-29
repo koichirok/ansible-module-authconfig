@@ -1,0 +1,29 @@
+---
+- name: "smbworkgroup | Change setting by smbworkgroup=yes"
+  authconfig: "smbworkgroup=yes"
+  register: result
+
+- name: "smbworkgroup | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbworkgroup | Assert 'SMB workgroup enabled' in new settings"
+  assert:
+    that:
+      - '"SMB workgroup enabled" in result.new_settings'
+
+- name: "smbworkgroup | Restore setting by smbworkgroup=no"
+  authconfig: "smbworkgroup=no"
+  register: result
+
+- name: "smbworkgroup | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbworkgroup | Assert 'SMB workgroup disabled' in new settings"
+  assert:
+    that:
+      - '"SMB workgroup disabled" in result.new_settings'
+

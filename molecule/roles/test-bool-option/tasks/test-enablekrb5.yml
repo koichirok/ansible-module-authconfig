@@ -1,0 +1,29 @@
+---
+- name: "enablekrb5 | Change setting by enablekrb5=yes"
+  authconfig: "enablekrb5=yes"
+  register: result
+
+- name: "enablekrb5 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5 | Assert 'pam_krb5 is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_krb5 is enabled" in result.new_settings'
+
+- name: "enablekrb5 | Restore setting by enablekrb5=no"
+  authconfig: "enablekrb5=no"
+  register: result
+
+- name: "enablekrb5 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5 | Assert 'pam_krb5 is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_krb5 is disabled" in result.new_settings'
+

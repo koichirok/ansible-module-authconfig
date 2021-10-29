@@ -1,0 +1,12 @@
+{% if item.registry is defined %}
+FROM {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM {{ item.image }}
+{% endif %}
+
+RUN rm -rf /etc/yum.repos.d/*.repo
+COPY CentOS-Vault.repo /etc/yum.repos.d/
+RUN set -e;\
+    yum update;\
+    yum install python27
+    

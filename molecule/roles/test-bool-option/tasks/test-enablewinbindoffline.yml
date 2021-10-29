@@ -1,0 +1,29 @@
+---
+- name: "enablewinbindoffline | Change setting by enablewinbindoffline=yes"
+  authconfig: "enablewinbindoffline=yes"
+  register: result
+
+- name: "enablewinbindoffline | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindoffline | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "enablewinbindoffline | Restore setting by enablewinbindoffline=no"
+  authconfig: "enablewinbindoffline=no"
+  register: result
+
+- name: "enablewinbindoffline | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindoffline | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

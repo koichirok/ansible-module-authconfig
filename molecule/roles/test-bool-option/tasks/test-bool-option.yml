@@ -1,0 +1,10 @@
+---
+- name: generate task file
+  template:
+    src: test-bool-option.yml.j2
+    dest: "{{ role_path }}/tasks/test-{{ item.key }}.yml"
+    mode: 0644
+  delegate_to: localhost
+
+- name: execute tasks
+  include_tasks: "test-{{ item.key }}.yml"

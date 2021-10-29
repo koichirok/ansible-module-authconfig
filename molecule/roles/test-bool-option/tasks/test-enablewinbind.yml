@@ -1,0 +1,29 @@
+---
+- name: "enablewinbind | Change setting by enablewinbind=yes"
+  authconfig: "enablewinbind=yes"
+  register: result
+
+- name: "enablewinbind | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewinbind | Assert 'nss_winbind is enabled' in new settings"
+  assert:
+    that:
+      - '"nss_winbind is enabled" in result.new_settings'
+
+- name: "enablewinbind | Restore setting by enablewinbind=no"
+  authconfig: "enablewinbind=no"
+  register: result
+
+- name: "enablewinbind | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablewinbind | Assert 'nss_winbind is disabled' in new settings"
+  assert:
+    that:
+      - '"nss_winbind is disabled" in result.new_settings'
+

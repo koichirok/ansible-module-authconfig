@@ -1,0 +1,79 @@
+---
+- name: Ensure that no changes are made when run without options
+  block:
+    - name: Run without options
+      authconfig:
+      register: result
+
+    - debug: var=result
+
+    - name: Whithout options, no changes are made
+      assert:
+        that:
+          - result is not changed
+
+- name: ensure tmporal tasks directory
+  file:
+    state: directory
+    path: "{{ molecule_ephemeral_directory }}/tasks"
+    mode: 0755
+  delegate_to: localhost
+
+- name: loop block
+  vars:
+    _authconfig_options: "{{ authconfig_options[ansible_distribution_major_version] }}"
+    _authconfig_options_for_loop: "{{ _authconfig_options | dict2items | rejectattr('key', 'in', ng) }}"
+    ok:
+      - enableshadow
+      - enablenis
+      - enableldap
+      - enableldapauth
+      - enablesmartcard
+      # enablesmartcard and enablerequiresmartcard don't work properly without pam_pkcs11
+      - enablerequiresmartcard
+      - enablefingerprint  # when: "ansible_distribution_major_version|int > 5"
+      - enableecryptfs     # when: "ansible_distribution_major_version|int > 6"
+      - enablekrb5
+      - enablekrb5kdcdns
+      - enablekrb5realmdns
+      - enablewinbind
+      - enablewinbindauth
+      - enableipav2  # when: "ansible_distribution_major_version|int > 5"
+      - enablewins
+      - enablepreferdns  # when: "ansible_distribution_major_version|int > 5" } # no difference in 'authconfig --test output'
+      - enablehesiod
+      - enablesssd
+      - enablesssdauth
+      - enablecachecreds  # when: "ansible_distribution_major_version|int > 5" } # 5: unsupported, 6: needs valid config to work
+      - enablelocauthorize
+      - enablepamaccess
+      - enablesysnetauth
+      - enablemkhomedir
+    ng:
+      - enableldaptls
+      - enablecache
+    testing:
+  block:
+    - name: test bool options
+      include_tasks: test-bool-option.yml
+      loop: "{{ _authconfig_options_for_loop }}"
+      loop_control:
+        label: "{{ item.key }}"
+      when: item.value.type == 'bool'
+
+# #    - enablemd5,, tags: [ 'enablemd5,' ] } non_bool_exp: True }
+# #passalgo
+# #    - { role: test-special-bool-exp-option, option: enablerfc2307bis, tags: [ 'enablerfc2307bis' ] }
+# #    - enablewinbindusedefaultdomain, tags: [ 'enablewinbindusedefaultdomain' ] }
+# #    - enablewinbindoffline, tags: [ 'enablewinbindoffline' ] }
+# #    - enablewinbindkrb5, tags: [ 'enablewinbindkrb5' ] }
+# #    - enableipav2nontp, tags: [ 'enableipav2nontp' ] }
+# #    - enablereqlower, tags: [ 'enablereqlower' ] }
+# #    - enablereqdigit, tags: [ 'enablereqdigit' ] }
+# #    - enablereqother, tags: [ 'enablereqother' ] }
+# #    - enablerequpper, tags: [ 'enablerequpper' ] }
+# #    - { role: test-string-option, option: ldapserver,, tags: [ 'ldapserver,' ] } value: "ldap://ldap.example.com/" }
+# #    - { role: test-string-option, option: ldapbasedn, tags: [ 'ldapbasedn' ] }
+# #    - { role: test-string-option, option: ldaploadcacert, tags: [ 'ldaploadcacert' ] }
+#     - { role: test-special-bool-exp-option, option: enableforcelegacy, tags: [ 'enableforcelegacy' ],
+#         when: "ansible_distribution_major_version|int > 5" }

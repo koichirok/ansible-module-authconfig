@@ -1,0 +1,69 @@
+authconfig_options_defaults:
+  enableshadow: { type: bool, default: 'enabled', desc: 'shadow passwords are' }
+  enablemd5: { type: bool, default: 'sha512',  desc: 'password hashing algorithm is', enable: 'md5', disable: 'descrypt' }
+  passalgo: { type: bool, default: 'sha512',  desc: 'password hashing algorithm is' }
+  enablenis: { type: bool, default: 'disabled', desc: 'nss_nis is' }
+  nisdomain: { type: bool, default: '',         desc: 'NIS domain' }
+  nisserver: { type: bool, default: '',         desc: 'NIS server' }
+  enableldap: { type: bool, default: 'disabled', desc: 'nss_ldap is' }
+  enableldapauth: { type: bool, default: 'disabled', desc: 'pam_ldap is' }
+  ldapserver: { type: bool, default: '', desc: 'LDAP server' } #  nss-pam-ldapd's default: 'ldap://127.0.0.1/'
+  ldapbasedn: { type: bool, default: '', desc: 'LDAP base DN' } #  nss-pam-ldapd's default: 'dc=example,dc=com'
+  enableldaptls: { type: bool, default: 'disabled', desc: 'LDAP+TLS is' }
+  enablerfc2307bis: { type: bool, default: '= "rfc2307"',  desc: 'LDAP schema', enable: '= "rfc2307bis"', disable: '= "rfc2307"' }
+  ldaploadcacert: { type: bool, default: '', desc: '' } # FIXME
+  enablesmartcard: { type: bool, default: 'disabled', desc: 'pam_pkcs11 is' }
+  enablerequiresmartcard: { type: bool, default: 'disabled', desc: 'use only smartcard for login is' }
+  smartcardmodule: { type: bool, default: '', desc: 'smartcard module' }
+  smartcardaction: { type: bool, default: '', desc: 'smartcard removal action' }
+  enablefingerprint: { type: bool, default: 'disabled', desc: 'pam_fprintd is' }
+  enableecryptfs: { type: bool, default: 'disabled', desc: 'pam_ecryptfs is' }
+  enablekrb5: { type: bool, default: 'disabled', desc: 'pam_krb5 is' }
+  krb5kdc: { type: bool, default: '',         desc: 'krb5 kdc' }
+  krb5adminserver: { type: bool, default: '',         desc: 'krb5 admin server' }
+  krb5realm: { type: bool, default: '',         desc: 'krb5 realm' }
+  enablekrb5kdcdns: { type: bool, default: 'disabled', desc: 'krb5 kdc via dns is' }
+  enablekrb5realmdns: { type: bool, default: 'disabled', desc: 'krb5 realm via dns is' }
+  enablewinbind: { type: bool, default: 'disabled', desc: 'nss_winbind is' }
+  enablewinbindauth: { type: bool, default: 'disabled', desc: 'pam_winbind is' }
+  smbsecurity: { type: bool, default: 'user',     desc: 'SMB security' }
+  smbrealm: { type: bool, default: '',         desc: 'SMB realm' }
+  smbservers: { type: bool, default: '',         desc: 'SMB servers' }
+  smbworkgroup: { type: bool, default: '',         desc: 'SMB workgroup' }
+  smbidmaprange: { type: bool, default: '16777216-33554431', desc: 'SMB idmap range' }
+  winbindseparator: { type: bool, default: '', desc: '' } # missing in authconfig --test output?
+  winbindtemplatehomedir: { type: bool, default: '', desc: '' } # missing in authconfig --test output?
+  winbindtemplateprimarygroup: { type: bool, default: '', desc: '' } # missing in authconfig --test output?
+  winbindtemplateshell: { type: bool, default: '/bin/false', desc: 'Winbind template shell' } # FIXME
+  enablewinbindusedefaultdomain: { type: bool, default: 'abled', desc: '' } # missing in authconfig --test output?
+  enablewinbindoffline: { type: bool, default: 'abled', desc: '' } # missing in authconfig --test output?
+  enablewinbindkrb5: { type: bool, default: 'abled', desc: '' } # missing in authconfig --test output?
+  winbindjoin: { type: bool, default: '', desc: '' } # FIXME
+  enableipav2: { type: bool, default: 'disabled', desc: 'IPAv2 is' }
+  ipav2domain: { type: bool, default: '',         desc: 'IPAv2 domain' }
+  ipav2realm: { type: bool, default: '',         desc: 'IPAv2 realm' }
+  ipav2server: { type: bool, default: '',         desc: 'IPAv2 server' }
+  # enableipav2nontp:   { type: bool, default: 'disabled', desc: '' } # missing in authconfig --test ouput?
+  #ipav2join { type: bool, default: '',         desc: 'IPAv2 domain was 'not joined
+  enablewins: { type: bool, default: 'disabled', desc: 'nss_wins is' }
+  enablepreferdns: { type: bool, default: 'disabled', desc: 'DNS preference over NSS or WINS is', depends: [enablewins] }
+  enablehesiod: { type: bool, default: 'disabled', desc: 'nss_hesiod is' }
+  hesiodlhs: { type: bool, default: '',         desc: 'hesiod LHS' }
+  hesiodrhs: { type: bool, default: '',         desc: 'hesiod RHS' }
+  enablesssd: { type: bool, default: 'enabled',  desc: 'nss_sss is' } # + 'by default'
+  enablesssdauth: { type: bool, default: 'disabled', desc: 'pam_sss is' } # + 'by default'
+  enableforcelegacy: { type: bool, default: 'enabled',  desc: 'SSSD use instead of legacy services if possible is', enable: 'disabled', disable: 'enabled' }
+  enablecachecreds: { type: bool, default: 'enabled',  desc: 'credential caching in SSSD is' }
+  enablecache: { type: bool, default: 'disabled', desc: 'caching is' }
+  enablelocauthorize: { type: bool, default: 'enabled',  desc: 'Always authorize local users is' }
+  enablepamaccess: { type: bool, default: 'disabled', desc: 'pam_access is' }
+  enablesysnetauth: { type: bool, default: 'disabled', desc: 'Authenticate system accounts against network services is' }
+  enablemkhomedir: { type: bool, default: 'disabled', desc: 'pam_mkhomedir or pam_oddjob_mkhomedir is' }
+  passminlen: { type: bool, default: '', desc: '' } # FIXME
+  passminclass: { type: bool, default: '', desc: '' } # FIXME
+  passmaxrepeat: { type: bool, default: '', desc: '' } # FIXME
+  passmaxclassrepeat: { type: bool, default: '', desc: '' } # FIXME
+  enablereqlower: { type: bool, default: '', desc: '' } # FIXME
+  enablerequpper: { type: bool, default: '', desc: '' } # FIXME
+  enablereqdigit: { type: bool, default: '', desc: '' } # FIXME
+  enablereqother: { type: bool, default: '', desc: '' } # FIXME

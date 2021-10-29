@@ -1,0 +1,35 @@
+---
+- name: "enablepreferdns | Enable dependencies which disabled"
+  authconfig:
+    enablewins: yes
+- name: "enablepreferdns | Change setting by enablepreferdns=yes"
+  authconfig: "enablepreferdns=yes"
+  register: result
+
+- name: "enablepreferdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablepreferdns | Assert 'DNS preference over NSS or WINS is enabled' in new settings"
+  assert:
+    that:
+      - '"DNS preference over NSS or WINS is enabled" in result.new_settings'
+
+- name: "enablepreferdns | Restore setting by enablepreferdns=no"
+  authconfig: "enablepreferdns=no"
+  register: result
+
+- name: "enablepreferdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablepreferdns | Assert 'DNS preference over NSS or WINS is disabled' in new settings"
+  assert:
+    that:
+      - '"DNS preference over NSS or WINS is disabled" in result.new_settings'
+
+- name: "enablepreferdns | Restore dependencies' status"
+  authconfig:
+    enablewins: no

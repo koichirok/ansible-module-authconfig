@@ -1,0 +1,29 @@
+---
+- name: "enablereqother | Change setting by enablereqother=yes"
+  authconfig: "enablereqother=yes"
+  register: result
+
+- name: "enablereqother | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablereqother | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "enablereqother | Restore setting by enablereqother=no"
+  authconfig: "enablereqother=no"
+  register: result
+
+- name: "enablereqother | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablereqother | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

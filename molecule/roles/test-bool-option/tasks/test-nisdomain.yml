@@ -1,0 +1,29 @@
+---
+- name: "nisdomain | Change setting by nisdomain=yes"
+  authconfig: "nisdomain=yes"
+  register: result
+
+- name: "nisdomain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "nisdomain | Assert 'NIS domain enabled' in new settings"
+  assert:
+    that:
+      - '"NIS domain enabled" in result.new_settings'
+
+- name: "nisdomain | Restore setting by nisdomain=no"
+  authconfig: "nisdomain=no"
+  register: result
+
+- name: "nisdomain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "nisdomain | Assert 'NIS domain disabled' in new settings"
+  assert:
+    that:
+      - '"NIS domain disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "smbsecurity | Change setting by smbsecurity=yes"
+  authconfig: "smbsecurity=yes"
+  register: result
+
+- name: "smbsecurity | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbsecurity | Assert 'SMB security enabled' in new settings"
+  assert:
+    that:
+      - '"SMB security enabled" in result.new_settings'
+
+- name: "smbsecurity | Restore setting by smbsecurity=no"
+  authconfig: "smbsecurity=no"
+  register: result
+
+- name: "smbsecurity | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbsecurity | Assert 'SMB security disabled' in new settings"
+  assert:
+    that:
+      - '"SMB security disabled" in result.new_settings'
+

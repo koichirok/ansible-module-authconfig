@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  vars:
+    authconfig_install_required_packages: true
+    authconfig_install_optional_packages: true
+  roles:
+    - ansible-module-authconfig

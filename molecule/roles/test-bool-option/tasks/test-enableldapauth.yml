@@ -1,0 +1,29 @@
+---
+- name: "enableldapauth | Change setting by enableldapauth=yes"
+  authconfig: "enableldapauth=yes"
+  register: result
+
+- name: "enableldapauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldapauth | Assert 'pam_ldap is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_ldap is enabled" in result.new_settings'
+
+- name: "enableldapauth | Restore setting by enableldapauth=no"
+  authconfig: "enableldapauth=no"
+  register: result
+
+- name: "enableldapauth | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableldapauth | Assert 'pam_ldap is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_ldap is disabled" in result.new_settings'
+

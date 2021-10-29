@@ -1,0 +1,29 @@
+---
+- name: "enableipav2 | Change setting by enableipav2=yes"
+  authconfig: "enableipav2=yes"
+  register: result
+
+- name: "enableipav2 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableipav2 | Assert 'IPAv2 is enabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 is enabled" in result.new_settings'
+
+- name: "enableipav2 | Restore setting by enableipav2=no"
+  authconfig: "enableipav2=no"
+  register: result
+
+- name: "enableipav2 | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableipav2 | Assert 'IPAv2 is disabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 is disabled" in result.new_settings'
+

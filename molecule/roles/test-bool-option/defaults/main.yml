@@ -1,0 +1,38 @@
+---
+depends: []
+
+test:
+  hoge: "HOGE"
+
+authconfig_tmporal_tasks_dir: "{{ molecule_ephemeral_directory }}/tasks"
+
+authconfig_options:
+  "7": "{{ authconfig_options_defaults }}"
+  # '6': >
+  #   {{ ansible_options_defaults | combine({
+  #     enablesssd:     { type: 'bool', default: 'disabled', desc: 'nss_sss is' },
+  #     enablesssdauth: { type: 'bool', default: 'disabled', desc: 'pam_sss is' } 
+  #   }) }}
+  # '5': >
+  #   {{ ansible_options_defaults | combine({
+  #     enableshadow: { type: 'bool', default: 'disabled', desc: 'shadow passwords are' },
+  #     enablesssd: { type: 'bool', default: 'disabled', desc: 'nss_sss is' },
+  #     enablesssdauth: { type: 'bool', default: 'disabled', desc: 'pam_sss is' },
+  #     enablelocauthorize: { type: 'bool', default: 'disabled', desc: 'Always authorize local users is' },
+  #     enablemkhomedir: { type: 'bool', default: 'disabled', desc: 'pam_mkhomedir is' }
+  #   }) }}
+
+# centos5
+# ansible_python_interpreter: /usr/bin/python26
+# optional_packages:
+#   - nscd
+
+# centos6
+# ---
+# optional_packages:
+#   - nscd
+#   - nss-pam-ldapd
+#   - initscripts
+#   - patch
+# env:
+#   RUNLEVEL: 3

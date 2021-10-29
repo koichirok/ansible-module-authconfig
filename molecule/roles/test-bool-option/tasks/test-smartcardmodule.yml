@@ -1,0 +1,29 @@
+---
+- name: "smartcardmodule | Change setting by smartcardmodule=yes"
+  authconfig: "smartcardmodule=yes"
+  register: result
+
+- name: "smartcardmodule | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smartcardmodule | Assert 'smartcard module enabled' in new settings"
+  assert:
+    that:
+      - '"smartcard module enabled" in result.new_settings'
+
+- name: "smartcardmodule | Restore setting by smartcardmodule=no"
+  authconfig: "smartcardmodule=no"
+  register: result
+
+- name: "smartcardmodule | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smartcardmodule | Assert 'smartcard module disabled' in new settings"
+  assert:
+    that:
+      - '"smartcard module disabled" in result.new_settings'
+

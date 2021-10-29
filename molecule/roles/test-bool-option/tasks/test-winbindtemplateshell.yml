@@ -1,0 +1,29 @@
+---
+- name: "winbindtemplateshell | Change setting by winbindtemplateshell=yes"
+  authconfig: "winbindtemplateshell=yes"
+  register: result
+
+- name: "winbindtemplateshell | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindtemplateshell | Assert 'Winbind template shell enabled' in new settings"
+  assert:
+    that:
+      - '"Winbind template shell enabled" in result.new_settings'
+
+- name: "winbindtemplateshell | Restore setting by winbindtemplateshell=no"
+  authconfig: "winbindtemplateshell=no"
+  register: result
+
+- name: "winbindtemplateshell | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindtemplateshell | Assert 'Winbind template shell disabled' in new settings"
+  assert:
+    that:
+      - '"Winbind template shell disabled" in result.new_settings'
+

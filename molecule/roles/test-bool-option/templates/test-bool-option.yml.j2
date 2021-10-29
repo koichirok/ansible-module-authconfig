@@ -1,0 +1,44 @@
+---
+{% set disabled_depends = _authconfig_options | dict2items | selectattr("key", "in", item.value.depends | default([])) | map(attribute="key") %}
+{% if disabled_depends | length %}
+- name: "{{ item.key }} | Enable dependencies which disabled"
+  authconfig:
+{% for i in disabled_depends %}
+    {{ i }}: yes
+{% endfor %}
+{% endif %}
+- name: "{{ item.key }} | Change setting by {{ item.key }}={{ 'no' if item.value.default == 'enabled' else 'yes' }}"
+  authconfig: "{{ item.key }}={{ 'no' if item.value.default == 'enabled' else 'yes' }}"
+  register: result
+
+- name: "{{ item.key }} | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "{{ item.key }} | Assert '{{ '%s %s' | format(item.value.desc, 'disabled' if item.value.default == 'enabled' else 'enabled') }}' in new settings"
+  assert:
+    that:
+      - '"{{ '%s %s' | format(item.value.desc, 'disabled' if item.value.default == 'enabled' else 'enabled') }}" in result.new_settings'
+
+- name: "{{ item.key }} | Restore setting by {{ item.key }}={{ 'yes' if item.value.default == 'enabled' else 'no' }}"
+  authconfig: "{{ item.key }}={{ 'yes' if item.value.default == 'enabled' else 'no' }}"
+  register: result
+
+- name: "{{ item.key }} | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "{{ item.key }} | Assert '{{ '%s %s' | format(item.value.desc, 'enabled' if item.value.default == 'enabled' else 'disabled') }}' in new settings"
+  assert:
+    that:
+      - '"{{ '%s %s' | format(item.value.desc, 'enabled' if item.value.default == 'enabled' else 'disabled') }}" in result.new_settings'
+
+{% if disabled_depends | length %}
+- name: "{{ item.key }} | Restore dependencies' status"
+  authconfig:
+{% for i in disabled_depends %}
+    {{ i }}: no
+{% endfor %}
+{% endif %}

@@ -1,0 +1,29 @@
+---
+- name: "winbindtemplatehomedir | Change setting by winbindtemplatehomedir=yes"
+  authconfig: "winbindtemplatehomedir=yes"
+  register: result
+
+- name: "winbindtemplatehomedir | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindtemplatehomedir | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "winbindtemplatehomedir | Restore setting by winbindtemplatehomedir=no"
+  authconfig: "winbindtemplatehomedir=no"
+  register: result
+
+- name: "winbindtemplatehomedir | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "winbindtemplatehomedir | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

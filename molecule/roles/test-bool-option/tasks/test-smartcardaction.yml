@@ -1,0 +1,29 @@
+---
+- name: "smartcardaction | Change setting by smartcardaction=yes"
+  authconfig: "smartcardaction=yes"
+  register: result
+
+- name: "smartcardaction | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smartcardaction | Assert 'smartcard removal action enabled' in new settings"
+  assert:
+    that:
+      - '"smartcard removal action enabled" in result.new_settings'
+
+- name: "smartcardaction | Restore setting by smartcardaction=no"
+  authconfig: "smartcardaction=no"
+  register: result
+
+- name: "smartcardaction | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smartcardaction | Assert 'smartcard removal action disabled' in new settings"
+  assert:
+    that:
+      - '"smartcard removal action disabled" in result.new_settings'
+

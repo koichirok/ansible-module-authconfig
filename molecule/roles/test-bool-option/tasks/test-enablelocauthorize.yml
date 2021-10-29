@@ -1,0 +1,29 @@
+---
+- name: "enablelocauthorize | Change setting by enablelocauthorize=no"
+  authconfig: "enablelocauthorize=no"
+  register: result
+
+- name: "enablelocauthorize | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablelocauthorize | Assert 'Always authorize local users is disabled' in new settings"
+  assert:
+    that:
+      - '"Always authorize local users is disabled" in result.new_settings'
+
+- name: "enablelocauthorize | Restore setting by enablelocauthorize=yes"
+  authconfig: "enablelocauthorize=yes"
+  register: result
+
+- name: "enablelocauthorize | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablelocauthorize | Assert 'Always authorize local users is enabled' in new settings"
+  assert:
+    that:
+      - '"Always authorize local users is enabled" in result.new_settings'
+

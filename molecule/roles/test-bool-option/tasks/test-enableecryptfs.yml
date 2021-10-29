@@ -1,0 +1,29 @@
+---
+- name: "enableecryptfs | Change setting by enableecryptfs=yes"
+  authconfig: "enableecryptfs=yes"
+  register: result
+
+- name: "enableecryptfs | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableecryptfs | Assert 'pam_ecryptfs is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_ecryptfs is enabled" in result.new_settings'
+
+- name: "enableecryptfs | Restore setting by enableecryptfs=no"
+  authconfig: "enableecryptfs=no"
+  register: result
+
+- name: "enableecryptfs | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enableecryptfs | Assert 'pam_ecryptfs is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_ecryptfs is disabled" in result.new_settings'
+

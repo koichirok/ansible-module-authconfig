@@ -1,0 +1,29 @@
+---
+- name: "enablesmartcard | Change setting by enablesmartcard=yes"
+  authconfig: "enablesmartcard=yes"
+  register: result
+
+- name: "enablesmartcard | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesmartcard | Assert 'pam_pkcs11 is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_pkcs11 is enabled" in result.new_settings'
+
+- name: "enablesmartcard | Restore setting by enablesmartcard=no"
+  authconfig: "enablesmartcard=no"
+  register: result
+
+- name: "enablesmartcard | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablesmartcard | Assert 'pam_pkcs11 is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_pkcs11 is disabled" in result.new_settings'
+

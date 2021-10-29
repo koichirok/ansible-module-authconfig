@@ -1,0 +1,29 @@
+---
+- name: "smbrealm | Change setting by smbrealm=yes"
+  authconfig: "smbrealm=yes"
+  register: result
+
+- name: "smbrealm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbrealm | Assert 'SMB realm enabled' in new settings"
+  assert:
+    that:
+      - '"SMB realm enabled" in result.new_settings'
+
+- name: "smbrealm | Restore setting by smbrealm=no"
+  authconfig: "smbrealm=no"
+  register: result
+
+- name: "smbrealm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "smbrealm | Assert 'SMB realm disabled' in new settings"
+  assert:
+    that:
+      - '"SMB realm disabled" in result.new_settings'
+

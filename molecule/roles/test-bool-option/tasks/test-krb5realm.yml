@@ -1,0 +1,29 @@
+---
+- name: "krb5realm | Change setting by krb5realm=yes"
+  authconfig: "krb5realm=yes"
+  register: result
+
+- name: "krb5realm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5realm | Assert 'krb5 realm enabled' in new settings"
+  assert:
+    that:
+      - '"krb5 realm enabled" in result.new_settings'
+
+- name: "krb5realm | Restore setting by krb5realm=no"
+  authconfig: "krb5realm=no"
+  register: result
+
+- name: "krb5realm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5realm | Assert 'krb5 realm disabled' in new settings"
+  assert:
+    that:
+      - '"krb5 realm disabled" in result.new_settings'
+

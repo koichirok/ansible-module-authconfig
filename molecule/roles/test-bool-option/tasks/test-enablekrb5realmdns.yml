@@ -1,0 +1,29 @@
+---
+- name: "enablekrb5realmdns | Change setting by enablekrb5realmdns=yes"
+  authconfig: "enablekrb5realmdns=yes"
+  register: result
+
+- name: "enablekrb5realmdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5realmdns | Assert 'krb5 realm via dns is enabled' in new settings"
+  assert:
+    that:
+      - '"krb5 realm via dns is enabled" in result.new_settings'
+
+- name: "enablekrb5realmdns | Restore setting by enablekrb5realmdns=no"
+  authconfig: "enablekrb5realmdns=no"
+  register: result
+
+- name: "enablekrb5realmdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5realmdns | Assert 'krb5 realm via dns is disabled' in new settings"
+  assert:
+    that:
+      - '"krb5 realm via dns is disabled" in result.new_settings'
+

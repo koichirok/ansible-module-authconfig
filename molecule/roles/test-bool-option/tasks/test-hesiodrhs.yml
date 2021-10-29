@@ -1,0 +1,29 @@
+---
+- name: "hesiodrhs | Change setting by hesiodrhs=yes"
+  authconfig: "hesiodrhs=yes"
+  register: result
+
+- name: "hesiodrhs | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "hesiodrhs | Assert 'hesiod RHS enabled' in new settings"
+  assert:
+    that:
+      - '"hesiod RHS enabled" in result.new_settings'
+
+- name: "hesiodrhs | Restore setting by hesiodrhs=no"
+  authconfig: "hesiodrhs=no"
+  register: result
+
+- name: "hesiodrhs | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "hesiodrhs | Assert 'hesiod RHS disabled' in new settings"
+  assert:
+    that:
+      - '"hesiod RHS disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "ipav2domain | Change setting by ipav2domain=yes"
+  authconfig: "ipav2domain=yes"
+  register: result
+
+- name: "ipav2domain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ipav2domain | Assert 'IPAv2 domain enabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 domain enabled" in result.new_settings'
+
+- name: "ipav2domain | Restore setting by ipav2domain=no"
+  authconfig: "ipav2domain=no"
+  register: result
+
+- name: "ipav2domain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ipav2domain | Assert 'IPAv2 domain disabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 domain disabled" in result.new_settings'
+

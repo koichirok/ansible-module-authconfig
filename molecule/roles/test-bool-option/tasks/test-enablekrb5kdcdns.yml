@@ -1,0 +1,29 @@
+---
+- name: "enablekrb5kdcdns | Change setting by enablekrb5kdcdns=yes"
+  authconfig: "enablekrb5kdcdns=yes"
+  register: result
+
+- name: "enablekrb5kdcdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5kdcdns | Assert 'krb5 kdc via dns is enabled' in new settings"
+  assert:
+    that:
+      - '"krb5 kdc via dns is enabled" in result.new_settings'
+
+- name: "enablekrb5kdcdns | Restore setting by enablekrb5kdcdns=no"
+  authconfig: "enablekrb5kdcdns=no"
+  register: result
+
+- name: "enablekrb5kdcdns | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablekrb5kdcdns | Assert 'krb5 kdc via dns is disabled' in new settings"
+  assert:
+    that:
+      - '"krb5 kdc via dns is disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "krb5kdc | Change setting by krb5kdc=yes"
+  authconfig: "krb5kdc=yes"
+  register: result
+
+- name: "krb5kdc | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5kdc | Assert 'krb5 kdc enabled' in new settings"
+  assert:
+    that:
+      - '"krb5 kdc enabled" in result.new_settings'
+
+- name: "krb5kdc | Restore setting by krb5kdc=no"
+  authconfig: "krb5kdc=no"
+  register: result
+
+- name: "krb5kdc | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "krb5kdc | Assert 'krb5 kdc disabled' in new settings"
+  assert:
+    that:
+      - '"krb5 kdc disabled" in result.new_settings'
+

@@ -1,0 +1,29 @@
+---
+- name: "enablewinbindusedefaultdomain | Change setting by enablewinbindusedefaultdomain=yes"
+  authconfig: "enablewinbindusedefaultdomain=yes"
+  register: result
+
+- name: "enablewinbindusedefaultdomain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindusedefaultdomain | Assert ' enabled' in new settings"
+  assert:
+    that:
+      - '" enabled" in result.new_settings'
+
+- name: "enablewinbindusedefaultdomain | Restore setting by enablewinbindusedefaultdomain=no"
+  authconfig: "enablewinbindusedefaultdomain=no"
+  register: result
+
+- name: "enablewinbindusedefaultdomain | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "enablewinbindusedefaultdomain | Assert ' disabled' in new settings"
+  assert:
+    that:
+      - '" disabled" in result.new_settings'
+

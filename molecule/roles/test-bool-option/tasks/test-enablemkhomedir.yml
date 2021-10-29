@@ -1,0 +1,29 @@
+---
+- name: "enablemkhomedir | Change setting by enablemkhomedir=yes"
+  authconfig: "enablemkhomedir=yes"
+  register: result
+
+- name: "enablemkhomedir | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablemkhomedir | Assert 'pam_mkhomedir or pam_oddjob_mkhomedir is enabled' in new settings"
+  assert:
+    that:
+      - '"pam_mkhomedir or pam_oddjob_mkhomedir is enabled" in result.new_settings'
+
+- name: "enablemkhomedir | Restore setting by enablemkhomedir=no"
+  authconfig: "enablemkhomedir=no"
+  register: result
+
+- name: "enablemkhomedir | Assert 'changed'"
+  assert:
+    that:
+      - result is changed
+
+- name: "enablemkhomedir | Assert 'pam_mkhomedir or pam_oddjob_mkhomedir is disabled' in new settings"
+  assert:
+    that:
+      - '"pam_mkhomedir or pam_oddjob_mkhomedir is disabled" in result.new_settings'
+

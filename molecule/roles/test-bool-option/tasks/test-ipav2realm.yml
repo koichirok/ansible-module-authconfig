@@ -1,0 +1,29 @@
+---
+- name: "ipav2realm | Change setting by ipav2realm=yes"
+  authconfig: "ipav2realm=yes"
+  register: result
+
+- name: "ipav2realm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ipav2realm | Assert 'IPAv2 realm enabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 realm enabled" in result.new_settings'
+
+- name: "ipav2realm | Restore setting by ipav2realm=no"
+  authconfig: "ipav2realm=no"
+  register: result
+
+- name: "ipav2realm | Assert 'changed'"
+  assert:
+    that:
+      - result | changed
+
+- name: "ipav2realm | Assert 'IPAv2 realm disabled' in new settings"
+  assert:
+    that:
+      - '"IPAv2 realm disabled" in result.new_settings'
+
